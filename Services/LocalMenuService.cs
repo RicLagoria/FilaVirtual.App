@@ -49,16 +49,19 @@ namespace FilaVirtual.App.Services
             return await _storage.ObtenerTodosAsync<MenuItemModel>();
         }
 
-        public async Task<Dictionary<string, List<MenuItemModel>>> ObtenerMenuPorCategoriaAsync()
+        public Task<Dictionary<string, List<MenuItemModel>>> ObtenerMenuPorCategoriaAsync()
         {
             // Por ahora, usar datos hardcodeados para asegurar que funcione
+            // En Sprint 3 se implementará la carga desde SQLite con await
             var items = CrearDatosEjemplo();
             
-            return items
+            var resultado = items
                 .Where(i => i.Disponible)
                 .GroupBy(i => i.Categoria)
                 .OrderBy(g => g.Key)
                 .ToDictionary(g => g.Key, g => g.OrderBy(i => i.Nombre).ToList());
+            
+            return Task.FromResult(resultado);
         }
 
         public async Task<MenuItemModel?> ObtenerItemPorIdAsync(int id)

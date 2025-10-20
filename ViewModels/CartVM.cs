@@ -197,9 +197,16 @@ namespace FilaVirtual.App.ViewModels
 
                 var qrJson = JsonSerializer.Serialize(qrPayload);
                 
-                // Por ahora solo mostrar en debug (en Sprint 3 se persistirá)
+                // TODO Sprint 3: Aquí se agregará persistencia a SQLite con await
+                // await _storage.InsertarAsync(order);
+                // foreach (var item in orderItems) { await _storage.InsertarAsync(item); }
+                
+                // Por ahora solo mostrar en debug
                 System.Diagnostics.Debug.WriteLine($"Pedido confirmado: {order.OrderId}");
                 System.Diagnostics.Debug.WriteLine($"QR Payload: {qrJson}");
+
+                // Simular delay de red para mantener la firma async
+                await Task.Delay(100);
 
                 // Limpiar carrito
                 ItemsCarrito.Clear();
