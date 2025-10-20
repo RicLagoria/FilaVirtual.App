@@ -7,10 +7,18 @@
     Shell.FlyoutBehavior="Disabled"
     Title="Fila Virtual - Cantina">
 
-    <ShellContent
-        Title="Menú"
-        ContentTemplate="{DataTemplate views:MenuPage}"
-        Route="MenuPage"
-        Icon="{FontImage Glyph='🍽️', Size=24}" />
+    <TabBar>
+        <ShellContent
+            Title="Menú"
+            ContentTemplate="{DataTemplate views:MenuPage}"
+            Route="MenuPage"
+            Icon="{FontImage Glyph='🍽️', Size=24}" />
+            
+        <ShellContent
+            Title="🛒 (0)"
+            ContentTemplate="{DataTemplate views:CartPage}"
+            Route="CartPage"
+            x:Name="CarritoTab" />
+    </TabBar>
 
 </Shell>

@@ -89,16 +89,35 @@
                                     <Border BackgroundColor="White"
                                            Stroke="{DynamicResource Gray300}"
                                            StrokeThickness="1"
-                                           Padding="16,12">
+                                           Padding="16,12"
+                                           x:Name="ItemBorder">
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="8" />
                                         </Border.StrokeShape>
                                         
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer 
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MenuVM}}, Path=SeleccionarItemCommand}"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MenuVM}}, Path=AgregarAlCarritoCommand}"
                                                 CommandParameter="{Binding .}" />
                                         </Border.GestureRecognizers>
+
+                                        <!-- Indicador de agregado -->
+                                        <Border x:Name="AddedIndicator"
+                                               BackgroundColor="{DynamicResource Primary}"
+                                               Opacity="0"
+                                               IsVisible="False"
+                                               Padding="8,4"
+                                               HorizontalOptions="End"
+                                               VerticalOptions="Start"
+                                               Margin="0,0,0,0">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="12" />
+                                            </Border.StrokeShape>
+                                            <Label Text="✓ Agregado"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   TextColor="White" />
+                                        </Border>
 
                                         <Grid ColumnDefinitions="*,Auto">
                                             <VerticalStackLayout Grid.Column="0" Spacing="4">

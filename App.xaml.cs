@@ -1,10 +1,11 @@
 ﻿using System.Globalization;
+using FilaVirtual.App.Services;
 
 namespace FilaVirtual.App
 {
     public partial class App : Application
     {
-        public App()
+        public App(ICartNotificationService cartNotificationService)
         {
             InitializeComponent();
 
@@ -13,7 +14,7 @@ namespace FilaVirtual.App
             CultureInfo.DefaultThreadCurrentCulture = culture;
             CultureInfo.DefaultThreadCurrentUICulture = culture;
 
-            MainPage = new AppShell();
+            MainPage = new AppShell(cartNotificationService);
         }
     }
 }

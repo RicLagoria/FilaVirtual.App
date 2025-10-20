@@ -13,6 +13,7 @@ namespace FilaVirtual.App.ViewModels
     public partial class MenuVM : ObservableObject
     {
         private readonly IMenuService _menuService;
+        private readonly CartVM _cartVM;
 
         [ObservableProperty]
         private bool _estaCargando;
@@ -25,9 +26,10 @@ namespace FilaVirtual.App.ViewModels
         /// </summary>
         public ObservableCollection<GrupoMenu> MenuAgrupado { get; } = new();
 
-        public MenuVM(IMenuService menuService)
+        public MenuVM(IMenuService menuService, CartVM cartVM)
         {
             _menuService = menuService;
+            _cartVM = cartVM;
         }
 
         /// <summary>
@@ -63,17 +65,33 @@ namespace FilaVirtual.App.ViewModels
         }
 
         /// <summary>
-        /// Maneja la selección de un ítem del menú
-        /// En Sprint 2 se agregará al carrito
+        /// Agrega un ítem al carrito
         /// </summary>
         [RelayCommand]
-        private void SeleccionarItem(MenuItemModel item)
+        private async Task AgregarAlCarrito(MenuItemModel item)
         {
             if (item == null) return;
 
-            // Por ahora solo mostramos un mensaje
-            // En Sprint 2 se agregará al carrito
-            System.Diagnostics.Debug.WriteLine($"Ítem seleccionado: {item.Nombre} - {item.PrecioFormateado}");
+            _cartVM.AgregarItem(item);
+            System.Diagnostics.Debug.WriteLine($"Ítem agregado al carrito: {item.Nombre} - {item.PrecioFormateado}");
+
+            // Mostrar confirmación visual
+            await MostrarConfirmacionAgregado(item.Nombre);
+        }
+
+        /// <summary>
+        /// Muestra confirmación visual de item agregado
+        /// </summary>
+        private async Task MostrarConfirmacionAgregado(string nombreItem)
+        {
+            // Mostrar confirmación en el mensaje de error (temporal)
+            MensajeError = $"✓ {nombreItem} agregado al carrito";
+            
+            // Limpiar mensaje después de 2 segundos
+            await Task.Delay(2000);
+            MensajeError = string.Empty;
+            
+            System.Diagnostics.Debug.WriteLine($"✓ {nombreItem} agregado al carrito");
         }
     }
 

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FilaVirtual.App.ViewModels"
+             xmlns:models="clr-namespace:FilaVirtual.App.Models"
+             x:Class="FilaVirtual.App.Views.CartPage"
+             x:DataType="vm:CartVM"
+             Title="Mi Carrito"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="16">
+        
+        <!-- Encabezado -->
+        <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+            <Label Text="Mi Carrito"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Start" />
+            
+            <Grid ColumnDefinitions="*,Auto">
+                <Label Grid.Column="0"
+                       Text="Revisa tu pedido antes de confirmar"
+                       FontSize="16"
+                       TextColor="{DynamicResource Gray600}"
+                       HorizontalOptions="Start" />
+                
+                <!-- Información de cantidad -->
+                <Border Grid.Column="1"
+                        BackgroundColor="{DynamicResource Primary}"
+                        Padding="8,4"
+                        VerticalOptions="Center"
+                        HorizontalOptions="End">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="2">
+                        <Label Text="{Binding CantidadItems, StringFormat='{0} items'}"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center" />
+                        <Label Text="{Binding CantidadProductos, StringFormat='{0} productos'}"
+                               FontSize="10"
+                               TextColor="White"
+                               Opacity="0.8"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+            
+            <!-- Mensaje de error -->
+            <Border IsVisible="{Binding MensajeError, Converter={StaticResource StringToBoolConverter}}"
+                    BackgroundColor="#FFEBEE"
+                    Stroke="#EF5350"
+                    StrokeThickness="1"
+                    Padding="12"
+                    Margin="0,8,0,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <Label Text="{Binding MensajeError}"
+                       TextColor="#C62828"
+                       FontSize="14" />
+            </Border>
+        </VerticalStackLayout>
+
+        <!-- Indicador de carga -->
+        <ActivityIndicator Grid.Row="1"
+                          IsRunning="{Binding EstaCargando}"
+                          IsVisible="{Binding EstaCargando}"
+                          Color="{DynamicResource Primary}"
+                          HeightRequest="50"
+                          WidthRequest="50"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center" />
+
+        <!-- Lista de items del carrito -->
+        <CollectionView Grid.Row="1"
+                       ItemsSource="{Binding ItemsCarrito}"
+                       IsVisible="{Binding EstaCargando, Converter={StaticResource InvertedBoolConverter}}"
+                       SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:CartItem">
+                    <Border BackgroundColor="White"
+                           Stroke="{DynamicResource Gray300}"
+                           StrokeThickness="1"
+                           Padding="16,12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+
+                        <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                            <!-- Información del item -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="{Binding Nombre}"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{DynamicResource Gray900}" />
+                                
+                                <Label Text="{Binding PrecioUnitarioFormateado}"
+                                       FontSize="14"
+                                       TextColor="{DynamicResource Gray600}" />
+                            </VerticalStackLayout>
+
+                            <!-- Controles de cantidad -->
+                            <VerticalStackLayout Grid.Column="1" 
+                                               Spacing="4"
+                                               VerticalOptions="Center"
+                                               Margin="16,0,0,0">
+                                <!-- Cantidad actual -->
+                                <Label Text="{Binding Cantidad, StringFormat='Cantidad: {0}'}"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{DynamicResource Primary}"
+                                       HorizontalOptions="Center" />
+                                
+                                <!-- Controles +/- -->
+                                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Button Text="-"
+                                            FontSize="18"
+                                            FontAttributes="Bold"
+                                            BackgroundColor="{DynamicResource Gray200}"
+                                            TextColor="{DynamicResource Gray700}"
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            CornerRadius="20"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartVM}}, Path=DecrementarCantidadCommand}"
+                                            CommandParameter="{Binding .}" />
+                                    
+                                    <Button Text="+"
+                                            FontSize="18"
+                                            FontAttributes="Bold"
+                                            BackgroundColor="{DynamicResource Primary}"
+                                            TextColor="White"
+                                            WidthRequest="40"
+                                            HeightRequest="40"
+                                            CornerRadius="20"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartVM}}, Path=IncrementarCantidadCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <!-- Subtotal -->
+                            <Label Grid.Column="2"
+                                   Text="{Binding SubtotalFormateado}"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   TextColor="{DynamicResource Primary}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End"
+                                   Margin="16,0,0,0" />
+
+                            <!-- Botón eliminar -->
+                            <Button Grid.Column="3"
+                                    Text="🗑️"
+                                    FontSize="16"
+                                    BackgroundColor="#FFEBEE"
+                                    TextColor="#C62828"
+                                    WidthRequest="40"
+                                    HeightRequest="40"
+                                    CornerRadius="20"
+                                    Margin="8,0,0,0"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CartVM}}, Path=QuitarItemCommand}"
+                                    CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Resumen y botón confirmar -->
+        <Border Grid.Row="2"
+                BackgroundColor="{DynamicResource Primary}"
+                Padding="16"
+                Margin="0,16,0,0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12" />
+            </Border.StrokeShape>
+
+            <Grid ColumnDefinitions="*,Auto">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="Total"
+                           FontSize="16"
+                           TextColor="White"
+                           Opacity="0.8" />
+                    
+                    <Label Text="{Binding TotalFormateado}"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+                    
+                    <Label Text="{Binding CantidadItems, StringFormat='Total: {0} items'}"
+                           FontSize="14"
+                           TextColor="White"
+                           Opacity="0.8" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1"
+                        Text="Confirmar Pedido"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        BackgroundColor="White"
+                        TextColor="{DynamicResource Primary}"
+                        Padding="24,12"
+                        CornerRadius="8"
+                        Command="{Binding ConfirmarPedidoCommand}"
+                        IsEnabled="{Binding ItemsCarrito.Count, Converter={StaticResource IntToBoolConverter}}" />
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>
