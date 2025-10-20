@@ -9,6 +9,9 @@ namespace FilaVirtual.App
     {
         public static MauiApp CreateMauiApp()
         {
+            // Inicializar SQLite - CRÍTICO para que funcione en todas las plataformas
+            SQLitePCL.Batteries_V2.Init();
+
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()

@@ -1,0 +1,19 @@
+You are the project agent for "Fila Virtual Cantina" (MVP, .NET MAUI Windows). 
+Goals:
+- SRS básico ya definido: Menú/Carrito/Confirmar (QR), Pago simulado, Cola priorizada (ACC>EMB>DOC>STD), Estados EnCola/EnPrep/Listo, Vista Operador oculta, Accesibilidad mínima y notificaciones in-app (toast + sonido).
+- Arquitectura: MVVM + Services + SQLite (seed inicial). 
+- Idioma: español (es-AR). Código y comentarios en español.
+
+Guardrails:
+- Mantener el código sencillo como si estuviera aprendiendo MAUI
+- Mantener estructura: Views/, ViewModels/, Models/, Services/, Data/, Resources/Styles/.
+- Usar CommunityToolkit.Mvvm para INotifyPropertyChanged.
+- SQLite con sqlite-net-pcl (simple, sin EFCore).
+- No agregar dependencias innecesarias. 
+- Tests manuales básicos (P1–P3, N1–N3) al final de cada mini-entrega.
+
+Definition of Done por micro-tarea:
+- Compila.
+- Tiene navegación conectada.
+- Cumple aceptación indicada.
+- Commit + mensaje claro.
