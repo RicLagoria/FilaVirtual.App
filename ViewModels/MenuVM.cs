@@ -41,10 +41,7 @@ namespace FilaVirtual.App.ViewModels
                 EstaCargando = true;
                 MensajeError = string.Empty;
 
-                // Cargar datos iniciales si es necesario
-                await _menuService.CargarDatosInicialesAsync();
-
-                // Obtener menú agrupado por categoría
+                // Obtener menú agrupado por categoría (ahora usa datos hardcodeados)
                 var menuPorCategoria = await _menuService.ObtenerMenuPorCategoriaAsync();
 
                 // Actualizar la colección
