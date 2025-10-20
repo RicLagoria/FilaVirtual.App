@@ -3,13 +3,14 @@
     x:Class="FilaVirtual.App.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:FilaVirtual.App"
+    xmlns:views="clr-namespace:FilaVirtual.App.Views"
     Shell.FlyoutBehavior="Disabled"
-    Title="FilaVirtual.App">
+    Title="Fila Virtual - Cantina">
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Menú"
+        ContentTemplate="{DataTemplate views:MenuPage}"
+        Route="MenuPage"
+        Icon="{FontImage Glyph='🍽️', Size=24}" />
 
 </Shell>

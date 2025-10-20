@@ -1,4 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using FilaVirtual.App.Services;
+using FilaVirtual.App.ViewModels;
+using FilaVirtual.App.Views;
 
 namespace FilaVirtual.App
 {
@@ -18,6 +21,16 @@ namespace FilaVirtual.App
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
+
+            // Registrar servicios
+            builder.Services.AddSingleton<IStorage, SQLiteStorage>();
+            builder.Services.AddSingleton<IMenuService, LocalMenuService>();
+
+            // Registrar ViewModels
+            builder.Services.AddTransient<MenuVM>();
+
+            // Registrar Views
+            builder.Services.AddTransient<MenuPage>();
 
             return builder.Build();
         }
