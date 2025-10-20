@@ -21,6 +21,10 @@ namespace FilaVirtual.App.ViewModels
         [ObservableProperty]
         private string _mensajeError = string.Empty;
 
+        // TODO: Incluir búsqueda por teclado de productos en el menú
+        // Agregar propiedad TextoBusqueda y comando BuscarCommand
+        // Filtrar MenuAgrupado basándose en el texto de búsqueda
+
         /// <summary>
         /// Ítems del menú agrupados por categoría
         /// </summary>

@@ -281,6 +281,8 @@ Confirmar QRCoder agregado y que se use ImageSource.FromStream(() => new MemoryS
 
 🗺 Roadmap corto
 
+ Búsqueda por teclado de productos en el menú (filtrado en tiempo real).
+
  Settings: alternar Texto grande / Alto contraste.
 
  Persistencia de preferencia (rol Operador/Cliente).
