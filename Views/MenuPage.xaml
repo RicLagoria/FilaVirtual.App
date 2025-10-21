@@ -22,6 +22,30 @@
                    TextColor="{DynamicResource Gray600}"
                    HorizontalOptions="Start" />
             
+            <!-- Barra de búsqueda -->
+            <SearchBar Placeholder="Buscar productos..."
+                      Text="{Binding TextoBusqueda}"
+                      PlaceholderColor="{DynamicResource Gray400}"
+                      TextColor="{DynamicResource Gray900}"
+                      BackgroundColor="White"
+                      CancelButtonColor="{DynamicResource Primary}"
+                      Margin="0,8,0,0" />
+            
+            <!-- Mensaje sin resultados -->
+            <Border IsVisible="{Binding MostrarMensajeSinResultados}"
+                    BackgroundColor="#FFF3E0"
+                    Stroke="#FF9800"
+                    StrokeThickness="1"
+                    Padding="12"
+                    Margin="0,8,0,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <Label Text="{Binding MensajeSinResultados}"
+                       TextColor="#E65100"
+                       FontSize="14" />
+            </Border>
+            
             <!-- Mensaje de error -->
             <Border IsVisible="{Binding MensajeError, Converter={StaticResource StringToBoolConverter}}"
                     BackgroundColor="#FFEBEE"

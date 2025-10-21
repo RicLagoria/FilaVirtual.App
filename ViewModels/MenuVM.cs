@@ -21,19 +21,41 @@ namespace FilaVirtual.App.ViewModels
         [ObservableProperty]
         private string _mensajeError = string.Empty;
 
-        // TODO: Incluir búsqueda por teclado de productos en el menú
-        // Agregar propiedad TextoBusqueda y comando BuscarCommand
-        // Filtrar MenuAgrupado basándose en el texto de búsqueda
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(MostrarMensajeSinResultados))]
+        private string _textoBusqueda = string.Empty;
+
+        [ObservableProperty]
+        private string _mensajeSinResultados = string.Empty;
 
         /// <summary>
         /// Ítems del menú agrupados por categoría
         /// </summary>
         public ObservableCollection<GrupoMenu> MenuAgrupado { get; } = new();
 
+        /// <summary>
+        /// Colección original sin filtrar (para restaurar después de búsqueda)
+        /// </summary>
+        private Dictionary<string, List<MenuItemModel>> _menuCompleto = new();
+
+        /// <summary>
+        /// Indica si se debe mostrar el mensaje de sin resultados
+        /// </summary>
+        public bool MostrarMensajeSinResultados => !string.IsNullOrWhiteSpace(TextoBusqueda) && MenuAgrupado.Count == 0;
+
         public MenuVM(IMenuService menuService, CartVM cartVM)
         {
             _menuService = menuService;
             _cartVM = cartVM;
+            
+            // Suscribirse a cambios en el texto de búsqueda
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(TextoBusqueda))
+                {
+                    FiltrarMenu();
+                }
+            };
         }
 
         /// <summary>
@@ -48,14 +70,10 @@ namespace FilaVirtual.App.ViewModels
                 MensajeError = string.Empty;
 
                 // Obtener menú agrupado por categoría (ahora usa datos hardcodeados)
-                var menuPorCategoria = await _menuService.ObtenerMenuPorCategoriaAsync();
+                _menuCompleto = await _menuService.ObtenerMenuPorCategoriaAsync();
 
-                // Actualizar la colección
-                MenuAgrupado.Clear();
-                foreach (var grupo in menuPorCategoria)
-                {
-                    MenuAgrupado.Add(new GrupoMenu(grupo.Key, grupo.Value));
-                }
+                // Actualizar la colección con todos los items
+                ActualizarMenuAgrupado(_menuCompleto);
             }
             catch (Exception ex)
             {
@@ -65,6 +83,63 @@ namespace FilaVirtual.App.ViewModels
             finally
             {
                 EstaCargando = false;
+            }
+        }
+
+        /// <summary>
+        /// Filtra el menú basándose en el texto de búsqueda
+        /// </summary>
+        private void FiltrarMenu()
+        {
+            if (string.IsNullOrWhiteSpace(TextoBusqueda))
+            {
+                // Si no hay texto de búsqueda, mostrar todo el menú
+                ActualizarMenuAgrupado(_menuCompleto);
+                MensajeSinResultados = string.Empty;
+                return;
+            }
+
+            // Filtrar items que coincidan con el texto de búsqueda
+            var textoMinuscula = TextoBusqueda.ToLower().Trim();
+            var menuFiltrado = new Dictionary<string, List<MenuItemModel>>();
+
+            foreach (var categoria in _menuCompleto)
+            {
+                var itemsFiltrados = categoria.Value
+                    .Where(item => 
+                        item.Nombre.ToLower().Contains(textoMinuscula) ||
+                        item.Categoria.ToLower().Contains(textoMinuscula))
+                    .ToList();
+
+                if (itemsFiltrados.Any())
+                {
+                    menuFiltrado[categoria.Key] = itemsFiltrados;
+                }
+            }
+
+            // Actualizar la colección
+            ActualizarMenuAgrupado(menuFiltrado);
+
+            // Actualizar mensaje si no hay resultados
+            if (menuFiltrado.Count == 0)
+            {
+                MensajeSinResultados = $"No se encontraron productos que coincidan con '{TextoBusqueda}'";
+            }
+            else
+            {
+                MensajeSinResultados = string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la colección MenuAgrupado con el diccionario proporcionado
+        /// </summary>
+        private void ActualizarMenuAgrupado(Dictionary<string, List<MenuItemModel>> menuPorCategoria)
+        {
+            MenuAgrupado.Clear();
+            foreach (var grupo in menuPorCategoria)
+            {
+                MenuAgrupado.Add(new GrupoMenu(grupo.Key, grupo.Value));
             }
         }
 
