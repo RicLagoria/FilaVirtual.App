@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:FilaVirtual.App.ViewModels"
+             xmlns:models="clr-namespace:FilaVirtual.App.Models"
+             x:Class="FilaVirtual.App.Views.OperatorPage"
+             x:DataType="vm:OperatorVM"
+             Title="Panel de Operador"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <Grid RowDefinitions="Auto,*" Padding="16">
+        
+        <!-- Encabezado -->
+        <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,16">
+            <Label Text="Panel de Operador"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Start" />
+            
+            <Label Text="Gestión de pedidos por estado"
+                   FontSize="16"
+                   TextColor="{DynamicResource Gray600}"
+                   HorizontalOptions="Start" />
+            
+            <!-- Botón refrescar -->
+            <Button Text="🔄 Refrescar"
+                    Command="{Binding CargarPedidosCommand}"
+                    BackgroundColor="{DynamicResource Primary}"
+                    TextColor="White"
+                    HorizontalOptions="End"
+                    Margin="0,8,0,0" />
+            
+            <!-- Mensaje de error -->
+            <Border IsVisible="{Binding MensajeError, Converter={StaticResource StringToBoolConverter}}"
+                    BackgroundColor="#FFEBEE"
+                    Stroke="#EF5350"
+                    StrokeThickness="1"
+                    Padding="12"
+                    Margin="0,8,0,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <Label Text="{Binding MensajeError}"
+                       TextColor="#C62828"
+                       FontSize="14" />
+            </Border>
+        </VerticalStackLayout>
+
+        <!-- Indicador de carga -->
+        <ActivityIndicator Grid.Row="1"
+                          IsRunning="{Binding EstaCargando}"
+                          IsVisible="{Binding EstaCargando}"
+                          Color="{DynamicResource Primary}"
+                          HeightRequest="50"
+                          WidthRequest="50"
+                          HorizontalOptions="Center"
+                          VerticalOptions="Center" />
+
+        <!-- Scroll con las tres listas -->
+        <ScrollView Grid.Row="1" IsVisible="{Binding EstaCargando, Converter={StaticResource InvertedBoolConverter}}">
+            <VerticalStackLayout Spacing="24">
+                
+                <!-- PEDIDOS EN COLA -->
+                <Border BackgroundColor="White"
+                       Stroke="{DynamicResource Gray300}"
+                       StrokeThickness="1"
+                       Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Border BackgroundColor="#FF9800" Padding="12,8">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Label Text="{Binding PedidosEnCola.Count, StringFormat='🟠 En Cola ({0})'}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                        </Border>
+
+                        <CollectionView ItemsSource="{Binding PedidosEnCola}"
+                                       SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Order">
+                                    <Border BackgroundColor="{DynamicResource Gray100}"
+                                           Stroke="{DynamicResource Gray300}"
+                                           StrokeThickness="1"
+                                           Padding="12"
+                                           Margin="0,4">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
+                                                <Label Text="{Binding OrderId}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{DynamicResource Gray900}" />
+                                                <Label Text="{Binding FechaFormateada}"
+                                                       FontSize="12"
+                                                       TextColor="{DynamicResource Gray600}" />
+                                                <Label Text="{Binding TipoPrioridad, StringFormat='Prioridad: {0}'}"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#FF9800" />
+                                            </VerticalStackLayout>
+
+                                            <Label Grid.Row="0" Grid.Column="1"
+                                                   Text="{Binding TotalFormateado}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{DynamicResource Primary}"
+                                                   VerticalOptions="Center" />
+
+                                            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Text="▶ Preparar"
+                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OperatorVM}}, Path=PrepararPedidoCommand}"
+                                                   CommandParameter="{Binding .}"
+                                                   BackgroundColor="{DynamicResource Primary}"
+                                                   TextColor="White"
+                                                   Margin="0,8,0,0" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <Label Text="No hay pedidos en cola"
+                                       TextColor="{DynamicResource Gray600}"
+                                       HorizontalOptions="Center"
+                                       Margin="0,16" />
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- PEDIDOS EN PREPARACIÓN -->
+                <Border BackgroundColor="White"
+                       Stroke="{DynamicResource Gray300}"
+                       StrokeThickness="1"
+                       Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Border BackgroundColor="#2196F3" Padding="12,8">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Label Text="{Binding PedidosEnPreparacion.Count, StringFormat='🔵 En Preparación ({0})'}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                        </Border>
+
+                        <CollectionView ItemsSource="{Binding PedidosEnPreparacion}"
+                                       SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Order">
+                                    <Border BackgroundColor="{DynamicResource Gray100}"
+                                           Stroke="{DynamicResource Gray300}"
+                                           StrokeThickness="1"
+                                           Padding="12"
+                                           Margin="0,4">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto">
+                                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="4">
+                                                <Label Text="{Binding OrderId}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{DynamicResource Gray900}" />
+                                                <Label Text="{Binding FechaFormateada}"
+                                                       FontSize="12"
+                                                       TextColor="{DynamicResource Gray600}" />
+                                                <Label Text="{Binding TipoPrioridad, StringFormat='Prioridad: {0}'}"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#2196F3" />
+                                            </VerticalStackLayout>
+
+                                            <Label Grid.Row="0" Grid.Column="1"
+                                                   Text="{Binding TotalFormateado}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{DynamicResource Primary}"
+                                                   VerticalOptions="Center" />
+
+                                            <Button Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                   Text="✓ Marcar Listo"
+                                                   Command="{Binding Source={RelativeSource AncestorType={x:Type vm:OperatorVM}}, Path=MarcarListoCommand}"
+                                                   CommandParameter="{Binding .}"
+                                                   BackgroundColor="#4CAF50"
+                                                   TextColor="White"
+                                                   Margin="0,8,0,0" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <Label Text="No hay pedidos en preparación"
+                                       TextColor="{DynamicResource Gray600}"
+                                       HorizontalOptions="Center"
+                                       Margin="0,16" />
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- PEDIDOS LISTOS -->
+                <Border BackgroundColor="White"
+                       Stroke="{DynamicResource Gray300}"
+                       StrokeThickness="1"
+                       Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="12">
+                        <Border BackgroundColor="#4CAF50" Padding="12,8">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8" />
+                            </Border.StrokeShape>
+                            <Label Text="{Binding PedidosListos.Count, StringFormat='🟢 Listos ({0})'}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                        </Border>
+
+                        <CollectionView ItemsSource="{Binding PedidosListos}"
+                                       SelectionMode="None">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Order">
+                                    <Border BackgroundColor="{DynamicResource Gray100}"
+                                           Stroke="{DynamicResource Gray300}"
+                                           StrokeThickness="1"
+                                           Padding="12"
+                                           Margin="0,4">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8" />
+                                        </Border.StrokeShape>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                                <Label Text="{Binding OrderId}"
+                                                       FontSize="14"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{DynamicResource Gray900}" />
+                                                <Label Text="{Binding FechaFormateada}"
+                                                       FontSize="12"
+                                                       TextColor="{DynamicResource Gray600}" />
+                                                <Label Text="{Binding TipoPrioridad, StringFormat='Prioridad: {0}'}"
+                                                       FontSize="12"
+                                                       FontAttributes="Bold"
+                                                       TextColor="#4CAF50" />
+                                            </VerticalStackLayout>
+
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding TotalFormateado}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{DynamicResource Primary}"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            <CollectionView.EmptyView>
+                                <Label Text="No hay pedidos listos"
+                                       TextColor="{DynamicResource Gray600}"
+                                       HorizontalOptions="Center"
+                                       Margin="0,16" />
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>
+
+

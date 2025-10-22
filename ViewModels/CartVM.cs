@@ -34,10 +34,24 @@ namespace FilaVirtual.App.ViewModels
         [ObservableProperty]
         private int _cantidadProductos;
 
+        [ObservableProperty]
+        private TipoPrioridad _prioridadSeleccionada = TipoPrioridad.STD;
+
         /// <summary>
         /// Items del carrito
         /// </summary>
         public ObservableCollection<CartItem> ItemsCarrito { get; } = new();
+
+        /// <summary>
+        /// Lista de prioridades disponibles para el Picker
+        /// </summary>
+        public List<TipoPrioridad> PrioridadesDisponibles { get; } = new()
+        {
+            TipoPrioridad.ACC,
+            TipoPrioridad.EMB,
+            TipoPrioridad.DOC,
+            TipoPrioridad.STD
+        };
 
         /// <summary>
         /// Total formateado con cultura es-AR
@@ -70,6 +84,15 @@ namespace FilaVirtual.App.ViewModels
                     }
                 }
             };
+        }
+
+        /// <summary>
+        /// Limpia completamente el carrito
+        /// </summary>
+        public void LimpiarCarrito()
+        {
+            ItemsCarrito.Clear();
+            ActualizarTotales();
         }
 
         /// <summary>
@@ -167,12 +190,12 @@ namespace FilaVirtual.App.ViewModels
                 // Generar OrderId único
                 var orderId = GenerarOrderId();
                 
-                // Crear Order
+                // Crear Order con la prioridad seleccionada
                 var order = new Order
                 {
                     OrderId = orderId,
                     Estado = EstadoPedido.EnCola,
-                    TipoPrioridad = TipoPrioridad.STD, // Por defecto, en Sprint 4 se implementará selección
+                    TipoPrioridad = PrioridadSeleccionada,
                     Total = Total,
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now
@@ -208,6 +231,9 @@ namespace FilaVirtual.App.ViewModels
                 // Limpiar carrito
                 ItemsCarrito.Clear();
                 ActualizarTotales();
+                
+                // Notificar cambio en el carrito (actualizar badge)
+                _cartNotificationService.ActualizarTituloCarrito(CantidadItems);
 
                 // Navegar a la página de estado del pedido
                 await Shell.Current.GoToAsync($"OrderStatusPage?orderId={orderCreado.OrderId}");

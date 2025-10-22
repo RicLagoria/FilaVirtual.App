@@ -172,16 +172,42 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- Resumen y botón confirmar -->
-        <Border Grid.Row="2"
-                BackgroundColor="{DynamicResource Primary}"
-                Padding="16"
-                Margin="0,16,0,0">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="12" />
-            </Border.StrokeShape>
+        <!-- Selector de prioridad y resumen -->
+        <VerticalStackLayout Grid.Row="2" Spacing="12" Margin="0,16,0,0">
+            
+            <!-- Selector de prioridad -->
+            <Border BackgroundColor="White"
+                   Stroke="{DynamicResource Gray300}"
+                   StrokeThickness="1"
+                   Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Label Grid.Column="0"
+                           Text="Tipo de prioridad:"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="{DynamicResource Gray900}"
+                           VerticalOptions="Center" />
+                    
+                    <Picker Grid.Column="1"
+                           ItemsSource="{Binding PrioridadesDisponibles}"
+                           SelectedItem="{Binding PrioridadSeleccionada}"
+                           FontSize="14"
+                           TextColor="{DynamicResource Gray900}"
+                           VerticalOptions="Center" />
+                </Grid>
+            </Border>
+            
+            <!-- Resumen y botón confirmar -->
+            <Border BackgroundColor="{DynamicResource Primary}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
 
-            <Grid ColumnDefinitions="*,Auto">
+                <Grid ColumnDefinitions="*,Auto">
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
                     <Label Text="Total"
                            FontSize="16"
@@ -209,8 +235,9 @@
                         CornerRadius="8"
                         Command="{Binding ConfirmarPedidoCommand}"
                         IsEnabled="{Binding ItemsCarrito.Count, Converter={StaticResource IntToBoolConverter}}" />
-            </Grid>
-        </Border>
+                </Grid>
+            </Border>
+        </VerticalStackLayout>
 
     </Grid>
 </ContentPage>

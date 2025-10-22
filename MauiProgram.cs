@@ -29,17 +29,21 @@ namespace FilaVirtual.App
             builder.Services.AddSingleton<IStorage, SQLiteStorage>();
             builder.Services.AddSingleton<IMenuService, LocalMenuService>();
             builder.Services.AddSingleton<IOrderService, LocalOrderService>();
+            builder.Services.AddSingleton<IQueueService, LocalQueueService>();
+            builder.Services.AddSingleton<INotificationService, LocalNotificationService>();
             builder.Services.AddSingleton<ICartNotificationService, CartNotificationService>();
 
             // Registrar ViewModels
             builder.Services.AddSingleton<CartVM>(); // Singleton para mantener estado del carrito
             builder.Services.AddTransient<MenuVM>();
             builder.Services.AddTransient<OrderStatusVM>();
+            builder.Services.AddTransient<OperatorVM>();
 
             // Registrar Views
             builder.Services.AddTransient<MenuPage>();
             builder.Services.AddTransient<CartPage>();
             builder.Services.AddTransient<OrderStatusPage>();
+            builder.Services.AddTransient<OperatorPage>();
 
             return builder.Build();
         }

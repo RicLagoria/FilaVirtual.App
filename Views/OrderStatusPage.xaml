@@ -207,11 +207,12 @@
                         IsVisible="{Binding Pedido.Estado, Converter={StaticResource EstadoEnColaConverter}}" />
                 
                 <!-- Botón volver al menú -->
-                <Button Text="Volver al Menú"
+                <Button Text="🏠 Volver al Menú"
                         FontSize="16"
-                        BackgroundColor="{DynamicResource Gray200}"
-                        TextColor="{DynamicResource Gray900}"
-                        Padding="16,12"
+                        FontAttributes="Bold"
+                        BackgroundColor="{DynamicResource Primary}"
+                        TextColor="White"
+                        Padding="24,12"
                         CornerRadius="8"
                         Clicked="OnVolverAlMenuClicked" />
             </VerticalStackLayout>

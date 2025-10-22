@@ -1,0 +1,72 @@
+[33mcommit 2a26cc2c297f90d9c45676281a0e30b2b452531a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: RicLagoria <ricardolagoria@gmail.com>
+Date:   Wed Oct 22 11:41:14 2025 -0300
+
+    feat(Sprint3): Persistencia de pedidos, código QR y pago demo
+    
+    Sprint 3 COMPLETADO - Persistencia de Order + Pago Demo
+    
+    SERVICIOS NUEVOS:
+    - IOrderService.cs: Interface para gestión de pedidos
+      - CrearPedidoAsync: Persiste Order y OrderItems en SQLite
+      - ObtenerPedidoPorOrderIdAsync: Recupera pedido por ID único
+      - ObtenerItemsPedidoAsync: Obtiene items de un pedido
+      - ActualizarEstadoPedidoAsync: Cambia estado del pedido
+      - ObtenerPedidosPorEstadoAsync: Filtra pedidos por estado
+    
+    - LocalOrderService.cs: Implementación completa con SQLite
+      - Persistencia transaccional de Order + Items
+      - Recuperación de ID autogenerado
+      - Actualización de estados
+    
+    VIEWMODELS:
+    - OrderStatusVM.cs: ViewModel de estado del pedido
+      - QueryProperty para recibir orderId desde navegación
+      - Generación de código QR con QRCoder
+      - MarcarComoPagadoCommand: Demo de pago (EnCola -> EnPreparacion)
+      - Estados visuales con colores: Naranja/Azul/Verde
+      - Carga automática de pedido e items
+    
+    VISTAS:
+    - OrderStatusPage.xaml: Página completa de estado
+      - Código QR de 250x250px con payload JSON
+      - Detalle de productos con contraste mejorado (fondo blanco, texto negro)
+      - CollectionView para lista de items robusta
+      - Badge morado para cantidades (x1, x2, etc)
+      - Botón 'Marcar como Pagado' (solo visible en estado EnCola)
+      - Botón 'Volver al Menú' para navegación
+      - Estados visuales con colores diferenciados
+    
+    CONVERTIDORES:
+    - EstadoEnColaConverter.cs: Visibilidad condicional del botón de pago
+    
+    ACTUALIZACIONES:
+    - SQLiteStorage.cs: Tablas Order y OrderItem creadas
+    - CartVM.cs: Persistencia completa al confirmar pedido
+      - Navegación automática a OrderStatusPage con orderId
+      - Limpieza de carrito después de confirmar
+    - AppShell.xaml.cs: Ruta 'OrderStatusPage' registrada
+    - MauiProgram.cs: DI de IOrderService y OrderStatusVM
+    - App.xaml: Convertidor EstadoEnColaConverter registrado
+    
+    FUNCIONALIDAD:
+     Pedidos se persisten en SQLite con OrderId único
+     Código QR generado con payload JSON completo
+     Navegación automática al confirmar pedido
+     Vista de estado con información completa y clara
+     Botón demo de pago que cambia estado EnCola -> EnPreparacion
+     Contraste mejorado en lista de productos (fondo blanco, texto negro)
+     Estados visuales diferenciados por color
+
+ App.xaml                            |   1 [32m+[m
+ AppShell.xaml.cs                    |   4 [32m+[m
+ Converters/EstadoEnColaConverter.cs |  23 [32m++++[m
+ MauiProgram.cs                      |   3 [32m+[m
+ Services/IOrderService.cs           |  42 [32m+++++++[m
+ Services/LocalOrderService.cs       |  75 [32m++++++++++++[m
+ Services/SQLiteStorage.cs           |   6 [32m+[m[31m-[m
+ ViewModels/CartVM.cs                |  19 [32m++[m[31m-[m
+ ViewModels/OrderStatusVM.cs         | 186 [32m++++++++++++++++++++++++++++++[m
+ Views/OrderStatusPage.xaml          | 223 [32m++++++++++++++++++++++++++++++++++++[m
+ Views/OrderStatusPage.xaml.cs       |  21 [32m++++[m
+ 11 files changed, 588 insertions(+), 15 deletions(-)

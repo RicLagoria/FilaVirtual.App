@@ -2,9 +2,9 @@ using FilaVirtual.App.ViewModels;
 
 namespace FilaVirtual.App.Views
 {
-    public partial class MenuPage : ContentPage
+    public partial class OperatorPage : ContentPage
     {
-        public MenuPage(MenuVM viewModel)
+        public OperatorPage(OperatorVM viewModel)
         {
             InitializeComponent();
             BindingContext = viewModel;
@@ -14,12 +14,13 @@ namespace FilaVirtual.App.Views
         {
             base.OnAppearing();
 
-            // Cargar el menú y limpiar carrito cuando aparece la página
-            if (BindingContext is MenuVM vm)
+            // Cargar pedidos cuando aparece la página
+            if (BindingContext is OperatorVM vm)
             {
-                await vm.OnAppearingAsync();
+                await vm.CargarPedidosAsync();
             }
         }
     }
 }
+
 

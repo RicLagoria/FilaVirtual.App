@@ -59,6 +59,17 @@ namespace FilaVirtual.App.ViewModels
         }
 
         /// <summary>
+        /// Se ejecuta cuando la página aparece
+        /// </summary>
+        [RelayCommand]
+        public async Task OnAppearingAsync()
+        {
+            // Limpiar carrito al volver al menú (asegurar estado limpio)
+            _cartVM.LimpiarCarrito();
+            await CargarMenuAsync();
+        }
+
+        /// <summary>
         /// Carga los datos del menú al aparecer la página
         /// </summary>
         [RelayCommand]
