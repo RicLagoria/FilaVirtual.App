@@ -16,38 +16,63 @@ namespace FilaVirtual.App.Views
         {
             base.OnAppearing();
             
-            // Iniciar auto-actualización cada 10 segundos (menos agresivo)
-            _autoRefreshTimer = new System.Timers.Timer(10000);
-            _autoRefreshTimer.Elapsed += async (s, e) =>
+            // Solo iniciar el timer si no existe uno ya activo
+            if (_autoRefreshTimer == null)
             {
-                // Solo actualizar si la página está realmente visible
-                if (IsVisible && BindingContext is OrderStatusVM vm && vm.Pedido != null)
+                // Iniciar auto-actualización cada 10 segundos
+                _autoRefreshTimer = new System.Timers.Timer(10000);
+                _autoRefreshTimer.Elapsed += async (s, e) =>
                 {
-                    await MainThread.InvokeOnMainThreadAsync(async () =>
+                    // Solo actualizar si la página está realmente visible
+                    if (BindingContext is OrderStatusVM vm && vm.Pedido != null)
                     {
-                        await vm.CargarPedidoAsync(vm.Pedido.OrderId);
-                    });
-                }
-            };
-            _autoRefreshTimer.Start();
+                        try
+                        {
+                            await MainThread.InvokeOnMainThreadAsync(async () =>
+                            {
+                                await vm.CargarPedidoAsync(vm.Pedido.OrderId);
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"Error en auto-refresh: {ex.Message}");
+                        }
+                    }
+                };
+                _autoRefreshTimer.Start();
+                System.Diagnostics.Debug.WriteLine("Timer de auto-refresh iniciado");
+            }
         }
 
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
             
-            // Detener auto-actualización al salir
-            _autoRefreshTimer?.Stop();
-            _autoRefreshTimer?.Dispose();
+            // Detener y limpiar el timer completamente
+            DetenerTimer();
+            System.Diagnostics.Debug.WriteLine("Timer de auto-refresh detenido");
+        }
+
+        private void DetenerTimer()
+        {
+            if (_autoRefreshTimer != null)
+            {
+                _autoRefreshTimer.Stop();
+                _autoRefreshTimer.Dispose();
+                _autoRefreshTimer = null;
+            }
         }
 
         private async void OnVolverAlMenuClicked(object sender, EventArgs e)
         {
-            // Detener auto-refresh antes de navegar
-            _autoRefreshTimer?.Stop();
-            _autoRefreshTimer?.Dispose();
+            // Detener timer antes de navegar
+            DetenerTimer();
             
-            // Volver al menú principal
+            // Hacer pop para volver al stack anterior (CartPage), luego ir al menú
+            // Esto limpia la OrderStatusPage del stack de navegación
+            await Shell.Current.Navigation.PopAsync();
+            
+            // Navegar al tab del menú
             await Shell.Current.GoToAsync("//MenuPage");
         }
     }

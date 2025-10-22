@@ -92,7 +92,10 @@ namespace FilaVirtual.App.ViewModels
         public void LimpiarCarrito()
         {
             ItemsCarrito.Clear();
+            PrioridadSeleccionada = TipoPrioridad.STD; // Resetear a prioridad por defecto
+            MensajeError = string.Empty;
             ActualizarTotales();
+            System.Diagnostics.Debug.WriteLine("Carrito limpiado completamente");
         }
 
         /// <summary>
@@ -228,12 +231,8 @@ namespace FilaVirtual.App.ViewModels
                 System.Diagnostics.Debug.WriteLine($"Pedido confirmado: {orderCreado.OrderId}");
                 System.Diagnostics.Debug.WriteLine($"QR Payload: {qrJson}");
 
-                // Limpiar carrito
-                ItemsCarrito.Clear();
-                ActualizarTotales();
-                
-                // Notificar cambio en el carrito (actualizar badge)
-                _cartNotificationService.ActualizarTituloCarrito(CantidadItems);
+                // Limpiar carrito completamente
+                LimpiarCarrito();
 
                 // Navegar a la página de estado del pedido
                 await Shell.Current.GoToAsync($"OrderStatusPage?orderId={orderCreado.OrderId}");
