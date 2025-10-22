@@ -19,12 +19,6 @@
             ContentTemplate="{DataTemplate views:CartPage}"
             Route="CartPage"
             x:Name="CarritoTab" />
-            
-        <ShellContent
-            Title="👨‍🍳 Operador"
-            ContentTemplate="{DataTemplate views:OperatorPage}"
-            Route="OperatorPage"
-            Icon="{FontImage Glyph='👨‍🍳', Size=24}" />
     </TabBar>
 
 </Shell>

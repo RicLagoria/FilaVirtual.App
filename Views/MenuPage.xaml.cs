@@ -20,6 +20,17 @@ namespace FilaVirtual.App.Views
                 await vm.OnAppearingAsync();
             }
         }
+
+        /// <summary>
+        /// Acceso oculto al panel de operador mediante triple-tap
+        /// </summary>
+        private async void OnAccesoOperadorTapped(object sender, EventArgs e)
+        {
+            System.Diagnostics.Debug.WriteLine("[MenuPage] Acceso a panel de operador activado");
+            
+            // Navegar al panel de operador
+            await Shell.Current.GoToAsync("OperatorPage");
+        }
     }
 }
 

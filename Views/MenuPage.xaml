@@ -15,7 +15,11 @@
             <Label Text="Menú de la Cantina"
                    FontSize="28"
                    FontAttributes="Bold"
-                   HorizontalOptions="Start" />
+                   HorizontalOptions="Start">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer NumberOfTapsRequired="3" Tapped="OnAccesoOperadorTapped" />
+                </Label.GestureRecognizers>
+            </Label>
             
             <Label Text="Seleccione los productos que desea pedir"
                    FontSize="16"

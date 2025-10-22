@@ -14,6 +14,7 @@ namespace FilaVirtual.App.ViewModels
     public partial class OrderStatusVM : ObservableObject
     {
         private readonly IOrderService _orderService;
+        private readonly IQueueService _queueService;
 
         [ObservableProperty]
         private bool _estaCargando;
@@ -39,9 +40,16 @@ namespace FilaVirtual.App.ViewModels
         [ObservableProperty]
         private Color _estadoColor = Colors.Gray;
 
-        public OrderStatusVM(IOrderService orderService)
+        [ObservableProperty]
+        private int _posicionEnCola;
+
+        [ObservableProperty]
+        private bool _mostrarPosicion;
+
+        public OrderStatusVM(IOrderService orderService, IQueueService queueService)
         {
             _orderService = orderService;
+            _queueService = queueService;
         }
 
         /// <summary>
@@ -82,6 +90,9 @@ namespace FilaVirtual.App.ViewModels
 
                 // Actualizar estado visual
                 ActualizarEstadoVisual();
+
+                // Obtener posición en cola si está en estado EnCola
+                await ActualizarPosicionEnColaAsync();
             }
             catch (Exception ex)
             {
@@ -178,6 +189,34 @@ namespace FilaVirtual.App.ViewModels
                     EstadoTexto = "Listo para Retirar";
                     EstadoColor = Color.FromArgb("#4CAF50"); // Verde
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la posición en cola del pedido
+        /// </summary>
+        private async Task ActualizarPosicionEnColaAsync()
+        {
+            if (Pedido == null) return;
+
+            try
+            {
+                // Solo mostrar posición si está en cola
+                if (Pedido.Estado == EstadoPedido.EnCola)
+                {
+                    PosicionEnCola = await _queueService.ObtenerPosicionEnColaAsync(Pedido.OrderId);
+                    MostrarPosicion = PosicionEnCola > 0;
+                }
+                else
+                {
+                    MostrarPosicion = false;
+                    PosicionEnCola = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener posición en cola: {ex.Message}");
+                MostrarPosicion = false;
             }
         }
     }

@@ -2,6 +2,7 @@
 using FilaVirtual.App.Services;
 using FilaVirtual.App.ViewModels;
 using FilaVirtual.App.Views;
+using CommunityToolkit.Maui;
 
 namespace FilaVirtual.App
 {
@@ -15,6 +16,7 @@ namespace FilaVirtual.App
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseMauiCommunityToolkit() // Toast notifications
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

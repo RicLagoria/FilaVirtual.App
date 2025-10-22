@@ -62,6 +62,27 @@
                            FontAttributes="Bold"
                            TextColor="White"
                            HorizontalOptions="Center" />
+                    
+                    <!-- Posición en cola (solo visible si está en cola) -->
+                    <Border IsVisible="{Binding MostrarPosicion}"
+                           BackgroundColor="#00000040"
+                           Padding="12,6"
+                           Margin="0,8,0,0"
+                           HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6">
+                            <Label Text="📍"
+                                   FontSize="16"
+                                   VerticalOptions="Center" />
+                            <Label Text="{Binding PosicionEnCola, StringFormat='Posición en cola: {0}'}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </Border>
                 </VerticalStackLayout>
             </Border>
 
