@@ -1,4 +1,5 @@
 ﻿using FilaVirtual.App.Services;
+using FilaVirtual.App.Views;
 
 namespace FilaVirtual.App
 {
@@ -7,6 +8,9 @@ namespace FilaVirtual.App
         public AppShell(ICartNotificationService cartNotificationService)
         {
             InitializeComponent();
+            
+            // Registrar rutas de navegación
+            Routing.RegisterRoute("OrderStatusPage", typeof(OrderStatusPage));
             
             // Registrar el tab del carrito inmediatamente
             cartNotificationService.RegistrarCarritoTab(CarritoTab);

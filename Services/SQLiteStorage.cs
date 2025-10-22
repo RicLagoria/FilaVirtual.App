@@ -37,10 +37,8 @@ namespace FilaVirtual.App.Services
 
             // Crear tablas si no existen
             await _database.CreateTableAsync<MenuItemModel>();
-            
-            // Aquí se agregarán más tablas en próximos sprints:
-            // await _database.CreateTableAsync<Order>();
-            // await _database.CreateTableAsync<OrderItem>();
+            await _database.CreateTableAsync<Order>();
+            await _database.CreateTableAsync<OrderItem>();
         }
 
         public async Task<bool> TieneDatosAsync<T>() where T : new()

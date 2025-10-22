@@ -14,6 +14,7 @@ namespace FilaVirtual.App.ViewModels
     public partial class CartVM : ObservableObject
     {
         private readonly ICartNotificationService _cartNotificationService;
+        private readonly IOrderService _orderService;
 
         [ObservableProperty]
         private bool _estaCargando;
@@ -44,9 +45,10 @@ namespace FilaVirtual.App.ViewModels
         [ObservableProperty]
         private string _totalFormateado = "$0";
 
-        public CartVM(ICartNotificationService cartNotificationService)
+        public CartVM(ICartNotificationService cartNotificationService, IOrderService orderService)
         {
             _cartNotificationService = cartNotificationService;
+            _orderService = orderService;
             
             // Suscribirse a cambios en la colección para actualizar totales
             ItemsCarrito.CollectionChanged += (s, e) =>
@@ -197,23 +199,18 @@ namespace FilaVirtual.App.ViewModels
 
                 var qrJson = JsonSerializer.Serialize(qrPayload);
                 
-                // TODO Sprint 3: Aquí se agregará persistencia a SQLite con await
-                // await _storage.InsertarAsync(order);
-                // foreach (var item in orderItems) { await _storage.InsertarAsync(item); }
+                // Persistir el pedido en SQLite
+                var orderCreado = await _orderService.CrearPedidoAsync(order, orderItems);
                 
-                // Por ahora solo mostrar en debug
-                System.Diagnostics.Debug.WriteLine($"Pedido confirmado: {order.OrderId}");
+                System.Diagnostics.Debug.WriteLine($"Pedido confirmado: {orderCreado.OrderId}");
                 System.Diagnostics.Debug.WriteLine($"QR Payload: {qrJson}");
-
-                // Simular delay de red para mantener la firma async
-                await Task.Delay(100);
 
                 // Limpiar carrito
                 ItemsCarrito.Clear();
                 ActualizarTotales();
 
-                // TODO: En Sprint 3 se implementará navegación a página de confirmación con QR
-                MensajeError = $"Pedido confirmado: {order.OrderId}";
+                // Navegar a la página de estado del pedido
+                await Shell.Current.GoToAsync($"OrderStatusPage?orderId={orderCreado.OrderId}");
             }
             catch (Exception ex)
             {
