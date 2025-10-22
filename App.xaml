@@ -16,6 +16,7 @@
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
             <converters:IntToBoolConverter x:Key="IntToBoolConverter" />
             <converters:EstadoEnColaConverter x:Key="EstadoEnColaConverter" />
+            <converters:BoolToMicTextConverter x:Key="BoolToMicTextConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

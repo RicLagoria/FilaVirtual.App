@@ -34,6 +34,10 @@ namespace FilaVirtual.App
             builder.Services.AddSingleton<IQueueService, LocalQueueService>();
             builder.Services.AddSingleton<INotificationService, LocalNotificationService>();
             builder.Services.AddSingleton<ICartNotificationService, CartNotificationService>();
+            
+            // Registrar servicios de reconocimiento de voz
+            builder.Services.AddSingleton<ISpeechRecognitionService, WindowsSpeechRecognitionService>();
+            builder.Services.AddSingleton<IVoiceOrderService, SimpleVoiceOrderService>();
 
             // Registrar ViewModels
             builder.Services.AddSingleton<CartVM>(); // Singleton para mantener estado del carrito
