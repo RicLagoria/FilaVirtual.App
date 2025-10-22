@@ -45,6 +45,54 @@
                       BackgroundColor="White"
                       CancelButtonColor="{DynamicResource Primary}"
                       Margin="0,8,0,0" />
+
+            <!-- Pedido por Voz -->
+            <Border BackgroundColor="{DynamicResource Primary}"
+                   Padding="16,12"
+                   Margin="0,12,0,0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <!-- Icono de micrófono -->
+                    <Label Grid.Column="0"
+                           Text="🎤"
+                           FontSize="28"
+                           VerticalOptions="Center"
+                           Margin="0,0,12,0" />
+                    
+                    <!-- Información del estado -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                        <Label Text="Pedido por Voz"
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+                        <Label Text="{Binding TextoEscuchado}"
+                               FontSize="12"
+                               TextColor="White"
+                               Opacity="0.9"
+                               IsVisible="{Binding EstaEscuchando}"
+                               LineBreakMode="TailTruncation" />
+                        <Label Text="Presiona para activar el micrófono"
+                               FontSize="11"
+                               TextColor="White"
+                               Opacity="0.7"
+                               IsVisible="{Binding EstaEscuchando, Converter={StaticResource InvertedBoolConverter}}" />
+                    </VerticalStackLayout>
+                    
+                    <!-- Botón de activar/desactivar -->
+                    <Button Grid.Column="2"
+                            Text="{Binding EstaEscuchando, Converter={StaticResource BoolToMicTextConverter}}"
+                            Command="{Binding ToggleMicCommand}"
+                            BackgroundColor="White"
+                            TextColor="{DynamicResource Primary}"
+                            Padding="20,10"
+                            CornerRadius="8"
+                            FontAttributes="Bold"
+                            FontSize="14"
+                            VerticalOptions="Center" />
+                </Grid>
+            </Border>
             
             <!-- Mensaje sin resultados -->
             <Border IsVisible="{Binding MostrarMensajeSinResultados}"

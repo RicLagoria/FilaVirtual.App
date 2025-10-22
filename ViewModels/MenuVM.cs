@@ -14,6 +14,8 @@ namespace FilaVirtual.App.ViewModels
     {
         private readonly IMenuService _menuService;
         private readonly CartVM _cartVM;
+        private readonly ISpeechRecognitionService _speechService;
+        private readonly IVoiceOrderService _voiceOrderService;
 
         [ObservableProperty]
         private bool _estaCargando;
@@ -27,6 +29,12 @@ namespace FilaVirtual.App.ViewModels
 
         [ObservableProperty]
         private string _mensajeSinResultados = string.Empty;
+
+        [ObservableProperty]
+        private bool _estaEscuchando;
+
+        [ObservableProperty]
+        private string _textoEscuchado = string.Empty;
 
         /// <summary>
         /// Ítems del menú agrupados por categoría
@@ -43,10 +51,14 @@ namespace FilaVirtual.App.ViewModels
         /// </summary>
         public bool MostrarMensajeSinResultados => !string.IsNullOrWhiteSpace(TextoBusqueda) && MenuAgrupado.Count == 0;
 
-        public MenuVM(IMenuService menuService, CartVM cartVM)
+        public MenuVM(IMenuService menuService, CartVM cartVM, 
+                     ISpeechRecognitionService speechService, 
+                     IVoiceOrderService voiceOrderService)
         {
             _menuService = menuService;
             _cartVM = cartVM;
+            _speechService = speechService;
+            _voiceOrderService = voiceOrderService;
             
             // Suscribirse a cambios en el texto de búsqueda
             PropertyChanged += (s, e) =>
@@ -56,6 +68,10 @@ namespace FilaVirtual.App.ViewModels
                     FiltrarMenu();
                 }
             };
+
+            // Suscribirse a eventos de reconocimiento de voz
+            _speechService.SpeechRecognized += OnSpeechRecognized;
+            _speechService.ErrorOccurred += OnSpeechError;
         }
 
         /// <summary>
@@ -182,6 +198,115 @@ namespace FilaVirtual.App.ViewModels
             MensajeError = string.Empty;
             
             System.Diagnostics.Debug.WriteLine($"✓ {nombreItem} agregado al carrito");
+        }
+
+        /// <summary>
+        /// Activa o desactiva el micrófono para pedidos por voz
+        /// </summary>
+        [RelayCommand]
+        public async Task ToggleMicAsync()
+        {
+            if (EstaEscuchando)
+            {
+                await _speechService.StopListeningAsync();
+                EstaEscuchando = false;
+                TextoEscuchado = string.Empty;
+                System.Diagnostics.Debug.WriteLine("[MenuVM] Micrófono detenido");
+            }
+            else
+            {
+                await _speechService.StartListeningAsync();
+                EstaEscuchando = true;
+                TextoEscuchado = "🎤 Escuchando... di tu pedido";
+                System.Diagnostics.Debug.WriteLine("[MenuVM] Micrófono activado");
+            }
+        }
+
+        /// <summary>
+        /// Manejador del evento cuando se reconoce voz
+        /// </summary>
+        private async void OnSpeechRecognized(object? sender, string texto)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MenuVM] Voz reconocida: {texto}");
+            TextoEscuchado = $"Escuché: \"{texto}\"";
+
+            try
+            {
+                // Interpretar el pedido
+                var items = await _voiceOrderService.InterpretarPedidoAsync(texto);
+
+                if (items.Count == 0)
+                {
+                    TextoEscuchado = "❌ No entendí el pedido. Intenta de nuevo.";
+                    return;
+                }
+
+                // Agregar items al carrito
+                int itemsAgregados = 0;
+                foreach (var voiceItem in items)
+                {
+                    // Buscar el producto en el menú
+                    MenuItemModel? menuItem = null;
+                    
+                    foreach (var grupo in MenuAgrupado)
+                    {
+                        menuItem = grupo.FirstOrDefault(m =>
+                            m.Nombre.Equals(voiceItem.NombreProducto, StringComparison.OrdinalIgnoreCase) ||
+                            m.Nombre.Contains(voiceItem.NombreProducto, StringComparison.OrdinalIgnoreCase)
+                        );
+                        
+                        if (menuItem != null) break;
+                    }
+
+                    if (menuItem != null)
+                    {
+                        // Agregar la cantidad solicitada
+                        for (int i = 0; i < voiceItem.Cantidad; i++)
+                        {
+                            _cartVM.AgregarItem(menuItem);
+                        }
+                        
+                        itemsAgregados++;
+                        System.Diagnostics.Debug.WriteLine($"[MenuVM] Agregado: {voiceItem.Cantidad}x {menuItem.Nombre}");
+                    }
+                }
+
+                // Mostrar confirmación
+                if (itemsAgregados > 0)
+                {
+                    TextoEscuchado = $"✅ {itemsAgregados} producto(s) agregados al carrito";
+                    
+                    // Opcional: Mostrar alert
+                    await MainThread.InvokeOnMainThreadAsync(async () =>
+                    {
+                        var mensaje = string.Join("\n", items.Select(i => $"• {i.Cantidad}x {i.NombreProducto}"));
+                        await Application.Current!.MainPage!.DisplayAlert(
+                            "✅ Agregado al Carrito",
+                            mensaje,
+                            "OK"
+                        );
+                    });
+                }
+                else
+                {
+                    TextoEscuchado = "❌ No encontré ese producto en el menú";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MenuVM] Error al procesar voz: {ex.Message}");
+                TextoEscuchado = "❌ Error al procesar pedido";
+            }
+        }
+
+        /// <summary>
+        /// Manejador del evento cuando ocurre un error en el reconocimiento
+        /// </summary>
+        private void OnSpeechError(object? sender, string error)
+        {
+            System.Diagnostics.Debug.WriteLine($"[MenuVM] Error de voz: {error}");
+            TextoEscuchado = $"❌ Error: {error}";
+            EstaEscuchando = false;
         }
     }
 
