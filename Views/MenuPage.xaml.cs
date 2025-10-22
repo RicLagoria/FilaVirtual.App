@@ -22,14 +22,22 @@ namespace FilaVirtual.App.Views
         }
 
         /// <summary>
-        /// Acceso oculto al panel de operador mediante triple-tap
+        /// Acceso al panel de operador mediante botón discreto
         /// </summary>
         private async void OnAccesoOperadorTapped(object sender, EventArgs e)
         {
             System.Diagnostics.Debug.WriteLine("[MenuPage] Acceso a panel de operador activado");
             
-            // Navegar al panel de operador
-            await Shell.Current.GoToAsync("OperatorPage");
+            try
+            {
+                // Navegar al panel de operador
+                await Shell.Current.GoToAsync("OperatorPage");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[MenuPage] Error al navegar: {ex.Message}");
+                await DisplayAlert("Error", "No se pudo acceder al panel de operador", "OK");
+            }
         }
     }
 }

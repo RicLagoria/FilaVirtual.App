@@ -12,14 +12,25 @@
         
         <!-- Encabezado -->
         <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,16">
-            <Label Text="Menú de la Cantina"
-                   FontSize="28"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Start">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer NumberOfTapsRequired="3" Tapped="OnAccesoOperadorTapped" />
-                </Label.GestureRecognizers>
-            </Label>
+            <HorizontalStackLayout Spacing="12" HorizontalOptions="Start">
+                <Label Text="Menú de la Cantina"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center" />
+                
+                <!-- Botón oculto para acceso operador -->
+                <Button Text="👨‍🍳"
+                        FontSize="20"
+                        BackgroundColor="Transparent"
+                        BorderColor="Transparent"
+                        TextColor="{DynamicResource Gray300}"
+                        WidthRequest="44"
+                        HeightRequest="44"
+                        CornerRadius="22"
+                        Opacity="0.3"
+                        Clicked="OnAccesoOperadorTapped"
+                        AutomationProperties.IsInAccessibleTree="False" />
+            </HorizontalStackLayout>
             
             <Label Text="Seleccione los productos que desea pedir"
                    FontSize="16"

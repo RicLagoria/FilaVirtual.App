@@ -11,6 +11,7 @@ namespace FilaVirtual.App
             
             // Registrar rutas de navegación
             Routing.RegisterRoute("OrderStatusPage", typeof(OrderStatusPage));
+            Routing.RegisterRoute("OperatorPage", typeof(OperatorPage));
             
             // Registrar el tab del carrito inmediatamente
             cartNotificationService.RegistrarCarritoTab(CarritoTab);
