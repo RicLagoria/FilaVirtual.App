@@ -1,0 +1,156 @@
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║        FILA VIRTUAL - CANTINA MVP                             ║
+║        Versión 1.0 - Octubre 2025                             ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+INSTRUCCIONES DE INSTALACIÓN
+─────────────────────────────────────────────────────────────────
+
+1. DESCOMPRIMIR
+   - Extrae todos los archivos de este ZIP a una carpeta de tu elección
+   - Ejemplo: C:\Aplicaciones\FilaVirtual\
+
+2. EJECUTAR
+   - Haz doble clic en "FilaVirtual.App.exe"
+   - NO es necesario instalar nada adicional
+   - La aplicación se ejecutará directamente
+
+3. PRIMER USO
+   - Al ejecutar por primera vez, la app creará automáticamente:
+     * Base de datos local (SQLite)
+     * Datos iniciales del menú (desde seed.json)
+   - Todo se guarda en: %LOCALAPPDATA%\FilaVirtual.App
+
+
+REQUISITOS DEL SISTEMA
+─────────────────────────────────────────────────────────────────
+
+✓ Windows 10 versión 19041 o superior (May 2020 Update)
+✓ Arquitectura de 64 bits (x64)
+✓ ~100 MB de espacio en disco
+✓ NO requiere permisos de administrador
+
+
+CÓMO USAR LA APLICACIÓN
+─────────────────────────────────────────────────────────────────
+
+PARA ESTUDIANTES/USUARIOS:
+
+1. Ver Menú
+   - La aplicación inicia en la página del menú
+   - Explora los productos disponibles en la cantina
+
+2. Agregar al Carrito
+   - Selecciona productos y cantidades
+   - Usa el botón 🎤 para pedidos por voz (experimental)
+
+3. Confirmar Pedido
+   - Revisa tu carrito
+   - Confirma el pedido
+   - Se generará un código QR único
+
+4. Seguimiento
+   - Ve el estado de tu pedido en tiempo real:
+     * 🕐 En Cola (esperando)
+     * 👨‍🍳 En Preparación
+     * ✅ Listo para recoger
+
+5. Prioridades
+   - Los pedidos se procesan en este orden:
+     1. Accesibilidad (ACC)
+     2. Embarazadas (EMB)
+     3. Docentes (DOC)
+     4. Estándar (STD)
+
+
+PARA OPERADORES (Vista Oculta):
+
+1. Acceso
+   - Desde cualquier página, haz clic 3 veces rápido en el título
+   - Aparecerá una alerta de confirmación
+   - Se abrirá la vista de operador
+
+2. Gestión de Pedidos
+   - Ve todos los pedidos en cola ordenados por prioridad
+   - Marca pedidos como "En Preparación"
+   - Marca pedidos como "Listos" cuando estén completos
+   - El sistema notifica automáticamente a los usuarios
+
+
+CARACTERÍSTICAS
+─────────────────────────────────────────────────────────────────
+
+✓ Menú completo con categorías
+✓ Carrito de compras
+✓ Código QR único por pedido
+✓ Sistema de cola priorizada
+✓ Notificaciones in-app (toast)
+✓ Pedidos por voz (experimental)
+✓ Accesibilidad básica
+✓ Todo funciona offline (sin conexión)
+
+
+SOLUCIÓN DE PROBLEMAS
+─────────────────────────────────────────────────────────────────
+
+⚠ La aplicación no inicia:
+  → Verifica que tengas Windows 10 versión 19041 o superior
+  → Asegúrate de que extrajiste TODOS los archivos del ZIP
+
+⚠ Error de base de datos:
+  → Cierra la aplicación
+  → Elimina la carpeta: %LOCALAPPDATA%\FilaVirtual.App
+  → Vuelve a abrir la aplicación
+
+⚠ No aparece el menú:
+  → Verifica que el archivo "seed.json" esté en la misma 
+    carpeta que FilaVirtual.App.exe
+
+⚠ El reconocimiento de voz no funciona:
+  → Esta función es experimental
+  → Requiere micrófono configurado en Windows
+  → Funciona mejor en español
+
+
+ARCHIVOS IMPORTANTES
+─────────────────────────────────────────────────────────────────
+
+NO ELIMINES ESTOS ARCHIVOS:
+
+• FilaVirtual.App.exe    → Ejecutable principal
+• FilaVirtual.App.dll    → Biblioteca principal
+• seed.json              → Datos iniciales del menú
+• *.dll                  → Dependencias necesarias
+• OpenSans-*.ttf         → Fuentes de la aplicación
+
+
+NOTAS ADICIONALES
+─────────────────────────────────────────────────────────────────
+
+• Esta es una versión MVP (Producto Mínimo Viable)
+• El pago es simulado (no hay transacciones reales)
+• Todos los datos se almacenan localmente
+• No se requiere conexión a internet
+• Diseñado específicamente para cantinas educativas
+
+
+SOPORTE
+─────────────────────────────────────────────────────────────────
+
+Para reportar problemas o sugerencias:
+- Proyecto: PGE-Proyectos
+- Aplicación: Fila Virtual Cantina
+- Plataforma: .NET MAUI 8.0
+
+
+╔═══════════════════════════════════════════════════════════════╗
+║                                                               ║
+║  ¡Gracias por usar Fila Virtual!                             ║
+║                                                               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+
+
+

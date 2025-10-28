@@ -16,6 +16,7 @@ namespace FilaVirtual.App.ViewModels
         private readonly CartVM _cartVM;
         private readonly ISpeechRecognitionService _speechService;
         private readonly IVoiceOrderService _voiceOrderService;
+        private readonly IAudioService _audioService;
 
         [ObservableProperty]
         private bool _estaCargando;
@@ -36,6 +37,12 @@ namespace FilaVirtual.App.ViewModels
         [ObservableProperty]
         private string _textoEscuchado = string.Empty;
 
+        [ObservableProperty]
+        private string _estadoMic = string.Empty;
+
+        [ObservableProperty]
+        private Color _colorEstado = Colors.Gray;
+
         /// <summary>
         /// Ítems del menú agrupados por categoría
         /// </summary>
@@ -53,12 +60,14 @@ namespace FilaVirtual.App.ViewModels
 
         public MenuVM(IMenuService menuService, CartVM cartVM, 
                      ISpeechRecognitionService speechService, 
-                     IVoiceOrderService voiceOrderService)
+                     IVoiceOrderService voiceOrderService,
+                     IAudioService audioService)
         {
             _menuService = menuService;
             _cartVM = cartVM;
             _speechService = speechService;
             _voiceOrderService = voiceOrderService;
+            _audioService = audioService;
             
             // Suscribirse a cambios en el texto de búsqueda
             PropertyChanged += (s, e) =>
@@ -211,14 +220,38 @@ namespace FilaVirtual.App.ViewModels
                 await _speechService.StopListeningAsync();
                 EstaEscuchando = false;
                 TextoEscuchado = string.Empty;
+                EstadoMic = "Micrófono detenido";
+                ColorEstado = Colors.Gray;
                 System.Diagnostics.Debug.WriteLine("[MenuVM] Micrófono detenido");
             }
             else
             {
+                EstadoMic = "Iniciando micrófono...";
+                ColorEstado = Colors.Orange;
+                TextoEscuchado = "Configurando audio...";
+                
+                // Reproducir sonido de inicio
+                await _audioService.PlayStartRecordingSoundAsync();
+                
                 await _speechService.StartListeningAsync();
-                EstaEscuchando = true;
-                TextoEscuchado = "🎤 Escuchando... di tu pedido";
-                System.Diagnostics.Debug.WriteLine("[MenuVM] Micrófono activado");
+                
+                if (EstaEscuchando)
+                {
+                    TextoEscuchado = "🎤 Escuchando... di tu pedido";
+                    EstadoMic = "Escuchando";
+                    ColorEstado = Colors.Green;
+                    System.Diagnostics.Debug.WriteLine("[MenuVM] Micrófono activado correctamente");
+                }
+                else
+                {
+                    TextoEscuchado = "❌ Error al activar micrófono";
+                    EstadoMic = "Error";
+                    ColorEstado = Colors.Red;
+                    System.Diagnostics.Debug.WriteLine("[MenuVM] Error al activar micrófono");
+                    
+                    // Reproducir sonido de error
+                    await _audioService.PlayErrorSoundAsync();
+                }
             }
         }
 
@@ -276,6 +309,9 @@ namespace FilaVirtual.App.ViewModels
                 {
                     TextoEscuchado = $"✅ {itemsAgregados} producto(s) agregados al carrito";
                     
+                    // Reproducir sonido de confirmación
+                    await _audioService.PlayConfirmationSoundAsync();
+                    
                     // Opcional: Mostrar alert
                     await MainThread.InvokeOnMainThreadAsync(async () =>
                     {
@@ -290,12 +326,18 @@ namespace FilaVirtual.App.ViewModels
                 else
                 {
                     TextoEscuchado = "❌ No encontré ese producto en el menú";
+                    
+                    // Reproducir sonido de error
+                    await _audioService.PlayErrorSoundAsync();
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[MenuVM] Error al procesar voz: {ex.Message}");
                 TextoEscuchado = "❌ Error al procesar pedido";
+                
+                // Reproducir sonido de error
+                await _audioService.PlayErrorSoundAsync();
             }
         }
 
@@ -306,6 +348,8 @@ namespace FilaVirtual.App.ViewModels
         {
             System.Diagnostics.Debug.WriteLine($"[MenuVM] Error de voz: {error}");
             TextoEscuchado = $"❌ Error: {error}";
+            EstadoMic = "Error";
+            ColorEstado = Colors.Red;
             EstaEscuchando = false;
         }
     }

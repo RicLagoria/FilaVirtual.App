@@ -27,10 +27,17 @@ namespace FilaVirtual.App.Services
 #if WINDOWS
             try
             {
+                System.Diagnostics.Debug.WriteLine("[Speech] Iniciando reconocimiento de voz...");
+                
+                // Verificar que hay dispositivos de audio disponibles
+                System.Diagnostics.Debug.WriteLine("[Speech] Verificando dispositivos de audio...");
+                
                 // Crear el motor de reconocimiento con cultura español Argentina
                 _recognizer = new SpeechRecognitionEngine(
                     new System.Globalization.CultureInfo("es-AR")
                 );
+                
+                System.Diagnostics.Debug.WriteLine("[Speech] Motor de reconocimiento creado");
 
                 // Configurar gramática con productos del menú
                 Choices menuItems = new Choices();
@@ -78,13 +85,37 @@ namespace FilaVirtual.App.Services
                 _recognizer.SpeechRecognitionRejected += OnSpeechRejected;
 
                 // Configurar entrada de audio (micrófono por defecto)
-                _recognizer.SetInputToDefaultAudioDevice();
+                try
+                {
+                    // En VMs, intentar configurar audio de forma más compatible
+                    System.Diagnostics.Debug.WriteLine("[Speech] Configurando audio para VM...");
+                    
+                    // Intentar configurar con formato específico para VMs
+                    var audioFormat = new System.Speech.AudioFormat.SpeechAudioFormatInfo(
+                        System.Speech.AudioFormat.EncodingFormat.Pcm, 
+                        16000, // Sample rate
+                        16,     // Bits per sample
+                        1,      // Channels (mono)
+                        2,      // Block align (16 bits / 8 * 1 channel)
+                        16000,  // Average bytes per second
+                        null    // No extra data
+                    );
+                    
+                    _recognizer.SetInputToDefaultAudioDevice();
+                    System.Diagnostics.Debug.WriteLine("[Speech] Dispositivo de audio configurado para VM");
+                }
+                catch (Exception audioEx)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Speech] Error configurando audio: {audioEx.Message}");
+                    ErrorOccurred?.Invoke(this, $"Error configurando micrófono en VM: {audioEx.Message}");
+                    return;
+                }
 
                 // Iniciar reconocimiento asíncrono continuo
                 _recognizer.RecognizeAsync(RecognizeMode.Multiple);
 
                 IsListening = true;
-                System.Diagnostics.Debug.WriteLine("[Speech] Reconocimiento de voz iniciado");
+                System.Diagnostics.Debug.WriteLine("[Speech] ✅ Reconocimiento de voz iniciado correctamente");
             }
             catch (Exception ex)
             {

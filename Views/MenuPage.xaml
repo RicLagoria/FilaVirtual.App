@@ -67,12 +67,29 @@
                                FontSize="16"
                                FontAttributes="Bold"
                                TextColor="White" />
+                        
+                        <!-- Estado del micrófono -->
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="{Binding EstadoMic}"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding ColorEstado}"
+                                   VerticalOptions="Center" />
+                            <Label Text="●"
+                                   FontSize="16"
+                                   TextColor="{Binding ColorEstado}"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        
+                        <!-- Texto de feedback -->
                         <Label Text="{Binding TextoEscuchado}"
-                               FontSize="12"
+                               FontSize="11"
                                TextColor="White"
                                Opacity="0.9"
-                               IsVisible="{Binding EstaEscuchando}"
-                               LineBreakMode="TailTruncation" />
+                               LineBreakMode="TailTruncation"
+                               IsVisible="{Binding TextoEscuchado, Converter={StaticResource StringToBoolConverter}}" />
+                        
+                        <!-- Mensaje cuando no está escuchando -->
                         <Label Text="Presiona para activar el micrófono"
                                FontSize="11"
                                TextColor="White"
