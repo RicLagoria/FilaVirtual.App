@@ -1,10 +1,8 @@
-using System.Media;
-
 namespace FilaVirtual.App.Services
 {
     /// <summary>
     /// Implementación del servicio de audio para Windows
-    /// Usa SystemSounds para sonidos del sistema
+    /// Usa Console.Beep para sonidos simples
     /// </summary>
     public class WindowsAudioService : IAudioService
     {
@@ -17,7 +15,10 @@ namespace FilaVirtual.App.Services
             {
                 await Task.Run(() =>
                 {
-                    SystemSounds.Asterisk.Play();
+                    // Sonido de confirmación: dos beeps cortos
+                    Console.Beep(800, 200);
+                    Thread.Sleep(50);
+                    Console.Beep(1000, 200);
                     System.Diagnostics.Debug.WriteLine("[Audio] Sonido de confirmación reproducido");
                 });
             }
@@ -36,7 +37,8 @@ namespace FilaVirtual.App.Services
             {
                 await Task.Run(() =>
                 {
-                    SystemSounds.Hand.Play();
+                    // Sonido de error: beep largo y grave
+                    Console.Beep(400, 500);
                     System.Diagnostics.Debug.WriteLine("[Audio] Sonido de error reproducido");
                 });
             }
@@ -55,7 +57,10 @@ namespace FilaVirtual.App.Services
             {
                 await Task.Run(() =>
                 {
-                    SystemSounds.Question.Play();
+                    // Sonido de inicio: beep ascendente
+                    Console.Beep(600, 150);
+                    Thread.Sleep(50);
+                    Console.Beep(800, 150);
                     System.Diagnostics.Debug.WriteLine("[Audio] Sonido de inicio de grabación reproducido");
                 });
             }

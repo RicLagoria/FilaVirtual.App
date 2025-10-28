@@ -1,4 +1,3 @@
-using Google.AI.GenerativeAI;
 using System.Text.Json;
 using System.Text;
 
@@ -10,18 +9,17 @@ namespace FilaVirtual.App.Services
     /// </summary>
     public class GeminiVoiceOrderService : IVoiceOrderService
     {
-        private readonly GenerativeModel _model;
         private readonly HttpClient _httpClient;
         private readonly SimpleVoiceOrderService _fallbackService;
+        private readonly string _apiKey;
+        private readonly string _apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent";
 
         public GeminiVoiceOrderService()
         {
             // Configurar Gemini Pro
-            var apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") 
-                        ?? throw new InvalidOperationException("GEMINI_API_KEY no configurada");
+            _apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") 
+                     ?? throw new InvalidOperationException("GEMINI_API_KEY no configurada");
             
-            var genAI = new GoogleGenerativeAI(apiKey);
-            _model = genAI.GetGenerativeModel("gemini-pro");
             _httpClient = new HttpClient();
             _fallbackService = new SimpleVoiceOrderService();
         }
@@ -43,13 +41,18 @@ namespace FilaVirtual.App.Services
                 
                 // Llamar a Gemini Pro con timeout
                 using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
-                var response = await _model.GenerateContentAsync(prompt, cancellationToken: cts.Token);
-                var respuesta = response.Text;
+                var response = await LlamarGeminiAPIAsync(prompt, cts.Token);
+                
+                if (string.IsNullOrEmpty(response))
+                {
+                    System.Diagnostics.Debug.WriteLine($"[Gemini] ⚠️ Respuesta vacía, usando fallback");
+                    return await _fallbackService.InterpretarPedidoAsync(textoVoz);
+                }
 
-                System.Diagnostics.Debug.WriteLine($"[Gemini] Respuesta: {respuesta}");
+                System.Diagnostics.Debug.WriteLine($"[Gemini] Respuesta: {response}");
 
                 // Parsear respuesta JSON
-                var items = ParsearRespuesta(respuesta);
+                var items = ParsearRespuesta(response);
                 
                 if (items.Count > 0)
                 {
@@ -71,6 +74,63 @@ namespace FilaVirtual.App.Services
             {
                 System.Diagnostics.Debug.WriteLine($"[Gemini Error] {ex.Message}, usando fallback");
                 return await _fallbackService.InterpretarPedidoAsync(textoVoz);
+            }
+        }
+
+        /// <summary>
+        /// Llama a la API de Gemini Pro usando HTTP client
+        /// </summary>
+        private async Task<string> LlamarGeminiAPIAsync(string prompt, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var requestBody = new
+                {
+                    contents = new[]
+                    {
+                        new
+                        {
+                            parts = new[]
+                            {
+                                new { text = prompt }
+                            }
+                        }
+                    },
+                    generationConfig = new
+                    {
+                        temperature = 0.1,
+                        maxOutputTokens = 150
+                    }
+                };
+
+                var json = JsonSerializer.Serialize(requestBody);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var url = $"{_apiUrl}?key={_apiKey}";
+                var response = await _httpClient.PostAsync(url, content, cancellationToken);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    var geminiResponse = JsonSerializer.Deserialize<GeminiResponse>(responseContent);
+                    
+                    if (geminiResponse?.candidates?.Length > 0)
+                    {
+                        return geminiResponse.candidates[0].content.parts[0].text;
+                    }
+                }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    System.Diagnostics.Debug.WriteLine($"[Gemini API Error] {response.StatusCode}: {errorContent}");
+                }
+
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[Gemini API Error] {ex.Message}");
+                return string.Empty;
             }
         }
 
@@ -155,6 +215,29 @@ RESPUESTA (solo JSON):";
 
             return new List<VoiceOrderItem>();
         }
+    }
+
+    /// <summary>
+    /// Modelo para la respuesta de la API de Gemini
+    /// </summary>
+    public class GeminiResponse
+    {
+        public GeminiCandidate[] candidates { get; set; } = Array.Empty<GeminiCandidate>();
+    }
+
+    public class GeminiCandidate
+    {
+        public GeminiContent content { get; set; } = new();
+    }
+
+    public class GeminiContent
+    {
+        public GeminiPart[] parts { get; set; } = Array.Empty<GeminiPart>();
+    }
+
+    public class GeminiPart
+    {
+        public string text { get; set; } = string.Empty;
     }
 }
 
