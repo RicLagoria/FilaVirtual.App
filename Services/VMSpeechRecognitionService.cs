@@ -48,6 +48,10 @@ namespace FilaVirtual.App.Services
                     // En VM, intentar configurar audio de forma más permisiva
                     System.Diagnostics.Debug.WriteLine("[VM-Speech] Configurando audio para VM...");
                     
+                    // Verificar si hay dispositivos de audio disponibles
+                    // Intentar configurar el dispositivo de audio
+                    System.Diagnostics.Debug.WriteLine("[VM-Speech] Verificando dispositivos de audio...");
+                    
                     // Intentar configurar sin formato específico (más compatible)
                     _recognizer.SetInputToDefaultAudioDevice();
                     audioConfigured = true;

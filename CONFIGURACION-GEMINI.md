@@ -13,7 +13,7 @@
 #### Opción A: Variable de Sistema (Recomendado)
 ```bash
 # En PowerShell (Windows)
-$env:GEMINI_API_KEY="tu_clave_aqui"
+$env:GEMINI_API_KEY="AIzaSyDwDPIC-v27c8urAgEhFuTe_MODVE2NSzA"
 
 # En CMD
 set GEMINI_API_KEY=tu_clave_aqui
@@ -22,7 +22,7 @@ set GEMINI_API_KEY=tu_clave_aqui
 #### Opción B: En el Código (Solo para Testing)
 ```csharp
 // En MauiProgram.cs (temporal)
-Environment.SetEnvironmentVariable("GEMINI_API_KEY", "tu_clave_aqui");
+Environment.SetEnvironmentVariable("GEMINI_API_KEY", "AIzaSyDwDPIC-v27c8urAgEhFuTe_MODVE2NSzA");
 ```
 
 ### 3. Verificar Configuración

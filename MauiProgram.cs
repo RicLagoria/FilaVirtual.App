@@ -37,9 +37,17 @@ namespace FilaVirtual.App
             builder.Services.AddSingleton<IAudioService, WindowsAudioService>();
             
             // Registrar servicios de reconocimiento de voz
-            // Usar servicio optimizado para VM (más compatible)
-            System.Diagnostics.Debug.WriteLine("[MauiProgram] Usando servicio optimizado para VM");
-            builder.Services.AddSingleton<ISpeechRecognitionService, VMSpeechRecognitionService>();
+            // Detectar si está en VM y usar servicio apropiado
+            if (IsRunningInVM())
+            {
+                System.Diagnostics.Debug.WriteLine("[MauiProgram] Detectada VM - usando servicio simulado");
+                builder.Services.AddSingleton<ISpeechRecognitionService, SimulatedVoiceService>();
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("[MauiProgram] Usando servicio estándar de reconocimiento");
+                builder.Services.AddSingleton<ISpeechRecognitionService, WindowsSpeechRecognitionService>();
+            }
             
             // Registrar servicio de interpretación de voz
             // Opción 1: Simple (pattern matching) - sin dependencias externas
@@ -79,7 +87,7 @@ namespace FilaVirtual.App
         {
             try
             {
-                // Método simple: verificar variables de entorno comunes de VM
+                // Método 1: verificar variables de entorno comunes de VM
                 var vmwareTools = Environment.GetEnvironmentVariable("VMWARE_TOOLS_INSTALLER");
                 var virtualBox = Environment.GetEnvironmentVariable("VBOX_INSTALL_PATH");
                 var hyperV = Environment.GetEnvironmentVariable("HYPERV_VM");
@@ -92,15 +100,30 @@ namespace FilaVirtual.App
                     return true;
                 }
                 
-                // Verificar nombre de computadora (método simple)
+                // Método 2: verificar nombre de computadora
                 var computerName = Environment.MachineName?.ToLower();
                 if (computerName != null && (
                     computerName.Contains("vm") ||
                     computerName.Contains("virtual") ||
-                    computerName.Contains("test")
+                    computerName.Contains("test") ||
+                    computerName.Contains("vbox")
                 ))
                 {
                     System.Diagnostics.Debug.WriteLine($"[VM Detection] Posible VM por nombre: {computerName}");
+                    return true;
+                }
+                
+                // Método 3: verificar si hay dispositivos de audio (más confiable)
+                try
+                {
+                    // Intentar crear un motor de reconocimiento para verificar audio
+                    using var testRecognizer = new System.Speech.Recognition.SpeechRecognitionEngine();
+                    testRecognizer.SetInputToDefaultAudioDevice();
+                    System.Diagnostics.Debug.WriteLine("[VM Detection] Audio disponible - no es VM");
+                }
+                catch
+                {
+                    System.Diagnostics.Debug.WriteLine("[VM Detection] Error verificando audio - probablemente VM");
                     return true;
                 }
                 
@@ -111,7 +134,7 @@ namespace FilaVirtual.App
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[VM Detection] Error detectando VM: {ex.Message}");
-                return false; // Asumir que no es VM si hay error
+                return true; // En caso de error, asumir que es VM para usar servicio simulado
             }
         }
     }
