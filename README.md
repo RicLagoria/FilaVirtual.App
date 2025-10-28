@@ -242,6 +242,12 @@ Tamaños mínimos 44×44 pt y contraste AA.
 # Compilar y ejecutar en Windows
 dotnet build -t:Run -f net8.0-windows10.0.19041.0
 
+# Compilar en modo Release
+dotnet build -c Release
+
+# Generar ejecutable para distribución
+.\Compilar-Release.ps1
+
 # Agregar paquetes
 dotnet add package CommunityToolkit.Mvvm
 dotnet add package sqlite-net-pcl
@@ -251,6 +257,45 @@ dotnet add package Plugin.Maui.Audio
 
 # Ver workloads instalados
 dotnet workload list
+
+📦 Distribución y Exportación
+
+Para crear un ejecutable distribuible del MVP:
+
+1. **Método Rápido** - Usar el script automatizado:
+   ```powershell
+   .\Compilar-Release.ps1
+   ```
+   Esto generará `FilaVirtual-MVP-v1.0.zip` (~35 MB) listo para distribuir.
+
+2. **Método Manual**:
+   ```powershell
+   # Compilar en Release
+   dotnet build -c Release
+   
+   # Crear ZIP
+   powershell -Command "Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::CreateFromDirectory('bin\x64\Release\net8.0-windows10.0.19041.0\win10-x64', 'FilaVirtual-MVP-v1.0.zip')"
+   ```
+
+3. **Archivos generados**:
+   - 📦 `FilaVirtual-MVP-v1.0.zip` - Paquete completo para distribución
+   - 📄 `DISTRIBUCION.md` - Guía completa de distribución
+   - 📄 `LEEME-DISTRIBUCION.txt` - Instrucciones para el usuario final (incluido en el ZIP)
+
+**Contenido del paquete distribuible:**
+- `FilaVirtual.App.exe` - Ejecutable principal
+- Todas las dependencias (DLLs)
+- Recursos (fuentes, imágenes, iconos)
+- `seed.json` - Datos iniciales
+- `LEEME-DISTRIBUCION.txt` - Instrucciones de uso
+
+**Requisitos del sistema destino:**
+- Windows 10 versión 19041 o superior
+- Arquitectura x64
+- ~100 MB espacio en disco
+- No requiere instalación ni permisos de administrador
+
+Ver `DISTRIBUCION.md` para más detalles.
 
 🧯 Solución de problemas
 
