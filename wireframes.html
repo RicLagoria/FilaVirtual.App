@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fila Virtual - Wireframes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .wireframe {
+            background: white;
+            border: 2px solid #333;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .wireframe h2 {
+            background: #e0e0e0;
+            padding: 10px;
+            margin: -20px -20px 20px -20px;
+            border-bottom: 2px solid #333;
+            text-align: center;
+        }
+        
+        .header {
+            background: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+        }
+        
+        .search-bar {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        
+        .voice-section {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+        
+        .category {
+            background: #f1f8e9;
+            border: 1px solid #4caf50;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        
+        .category-header {
+            background: #4caf50;
+            color: white;
+            padding: 8px;
+            margin: -10px -10px 10px -10px;
+            font-weight: bold;
+        }
+        
+        .menu-item {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .cart-item {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .btn {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-small {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        .btn-danger {
+            background: #f44336;
+        }
+        
+        .btn-success {
+            background: #4caf50;
+        }
+        
+        .status-card {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            border-radius: 8px;
+        }
+        
+        .qr-section {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .qr-placeholder {
+            width: 200px;
+            height: 200px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .operator-section {
+            background: #f5f5f5;
+            border: 1px solid #ccc;
+            margin: 15px 0;
+            padding: 15px;
+        }
+        
+        .operator-header {
+            background: #ff9800;
+            color: white;
+            padding: 10px;
+            margin: -15px -15px 15px -15px;
+            font-weight: bold;
+        }
+        
+        .order-item {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tab-bar {
+            background: #e0e0e0;
+            padding: 10px;
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        
+        .tab.active {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .priority-selector {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        
+        .total-section {
+            background: #2196f3;
+            color: white;
+            padding: 15px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fila Virtual - Wireframes de Vistas</h1>
+        
+        <!-- AppShell - Navegación -->
+        <div class="wireframe">
+            <h2>AppShell - Navegación Principal</h2>
+            <div class="tab-bar">
+                <div class="tab active">🍽️ Menú</div>
+                <div class="tab">🛒 (0)</div>
+            </div>
+            <p><em>TabBar con navegación entre Menú y Carrito</em></p>
+        </div>
+        
+        <!-- MenuPage -->
+        <div class="wireframe">
+            <h2>MenuPage - Vista del Menú</h2>
+            
+            <div class="header">
+                <h3>Menú de la Cantina 👨‍🍳</h3>
+                <p>Seleccione los productos que desea pedir</p>
+            </div>
+            
+            <div class="search-bar">
+                <strong>🔍 Buscar productos...</strong>
+            </div>
+            
+            <div class="voice-section">
+                <h4>🎤 Pedido por Voz</h4>
+                <p><strong>Estado:</strong> Desactivado ●</p>
+                <p><em>Presiona para activar el micrófono</em></p>
+                <button class="btn btn-small">Activar</button>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">Bebidas (3 items)</div>
+                <div class="menu-item">
+                    <div>
+                        <strong>Coca Cola</strong><br>
+                        <small>Bebidas</small>
+                    </div>
+                    <strong>$500</strong>
+                </div>
+                <div class="menu-item">
+                    <div>
+                        <strong>Agua</strong><br>
+                        <small>Bebidas</small>
+                    </div>
+                    <strong>$200</strong>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-header">Comidas (2 items)</div>
+                <div class="menu-item">
+                    <div>
+                        <strong>Hamburguesa</strong><br>
+                        <small>Comidas</small>
+                    </div>
+                    <strong>$1200</strong>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CartPage -->
+        <div class="wireframe">
+            <h2>CartPage - Vista del Carrito</h2>
+            
+            <div class="header">
+                <h3>Mi Carrito</h3>
+                <p>Revisa tu pedido antes de confirmar</p>
+                <div style="float: right; background: #2196f3; color: white; padding: 5px 10px; border-radius: 12px;">
+                    <strong>2 items</strong><br>
+                    <small>1 productos</small>
+                </div>
+            </div>
+            
+            <div class="cart-item">
+                <div>
+                    <strong>Coca Cola</strong><br>
+                    <small>$500</small>
+                </div>
+                <div class="controls">
+                    <strong>Cantidad: 2</strong><br>
+                    <button class="btn btn-small">-</button>
+                    <button class="btn btn-small">+</button>
+                </div>
+                <div><strong>$1000</strong></div>
+                <button class="btn btn-small btn-danger">🗑️</button>
+            </div>
+            
+            <div class="priority-selector">
+                <strong>Tipo de prioridad:</strong>
+                <select>
+                    <option>ACC - Accesible</option>
+                    <option>EMB - Embarazada</option>
+                    <option>DOC - Docente</option>
+                    <option>STD - Estándar</option>
+                </select>
+            </div>
+            
+            <div class="total-section">
+                <div>
+                    <div>Total</div>
+                    <div style="font-size: 24px;"><strong>$1000</strong></div>
+                    <div><small>Total: 2 items</small></div>
+                </div>
+                <button class="btn">Confirmar Pedido</button>
+            </div>
+        </div>
+        
+        <!-- OrderStatusPage -->
+        <div class="wireframe">
+            <h2>OrderStatusPage - Estado del Pedido</h2>
+            
+            <div class="header" style="text-align: center;">
+                <h3 style="color: #2196f3;">¡Pedido Confirmado!</h3>
+                <h2>ORD-001</h2>
+                <p>15/12/2024 14:30</p>
+            </div>
+            
+            <div class="status-card">
+                <div><strong>Estado Actual</strong></div>
+                <div style="font-size: 24px; margin: 10px 0;"><strong>En Cola</strong></div>
+                <div style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 16px; display: inline-block;">
+                    📍 <strong>Posición en cola: 3</strong>
+                </div>
+            </div>
+            
+            <div class="qr-section">
+                <h4>Código QR del Pedido</h4>
+                <div class="qr-placeholder">
+                    [QR CODE<br>250x250px]
+                </div>
+                <p><small>Muestra este código al retirar tu pedido</small></p>
+            </div>
+            
+            <div class="operator-section">
+                <h4>Detalle del Pedido</h4>
+                <div class="order-item">
+                    <div><strong>Coca Cola</strong></div>
+                    <div style="background: #2196f3; color: white; padding: 4px 8px; border-radius: 10px;">x2</div>
+                    <div><strong>$1000</strong></div>
+                </div>
+                <hr>
+                <div class="order-item">
+                    <div><strong>Total</strong></div>
+                    <div><strong>$1000</strong></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button class="btn btn-success" style="width: 100%; margin-bottom: 10px;">💳 Marcar como Pagado (Demo)</button>
+                <button class="btn" style="width: 100%;">🏠 Volver al Menú</button>
+            </div>
+        </div>
+        
+        <!-- OperatorPage -->
+        <div class="wireframe">
+            <h2>OperatorPage - Panel de Operador</h2>
+            
+            <div class="header">
+                <h3>Panel de Operador</h3>
+                <p>Gestión de pedidos por estado</p>
+                <button class="btn" style="float: right;">🔄 Refrescar</button>
+            </div>
+            
+            <div class="operator-section">
+                <div class="operator-header">🟠 En Cola (2)</div>
+                <div class="order-item">
+                    <div>
+                        <div><strong>ORD-001</strong></div>
+                        <div><small>15/12/2024 14:30</small></div>
+                        <div><small><strong>Prioridad: ACC</strong></small></div>
+                    </div>
+                    <div><strong>$1000</strong></div>
+                    <button class="btn btn-small">▶ Preparar</button>
+                </div>
+                <div class="order-item">
+                    <div>
+                        <div><strong>ORD-002</strong></div>
+                        <div><small>15/12/2024 14:35</small></div>
+                        <div><small><strong>Prioridad: STD</strong></small></div>
+                    </div>
+                    <div><strong>$800</strong></div>
+                    <button class="btn btn-small">▶ Preparar</button>
+                </div>
+            </div>
+            
+            <div class="operator-section">
+                <div class="operator-header" style="background: #2196f3;">🔵 En Preparación (1)</div>
+                <div class="order-item">
+                    <div>
+                        <div><strong>ORD-003</strong></div>
+                        <div><small>15/12/2024 14:25</small></div>
+                        <div><small><strong>Prioridad: DOC</strong></small></div>
+                    </div>
+                    <div><strong>$1500</strong></div>
+                    <button class="btn btn-small btn-success">✓ Marcar Listo</button>
+                </div>
+            </div>
+            
+            <div class="operator-section">
+                <div class="operator-header" style="background: #4caf50;">🟢 Listos (0)</div>
+                <p style="text-align: center; color: #666; padding: 20px;">No hay pedidos listos</p>
+            </div>
+        </div>
+        
+        <!-- Flujo de Estados -->
+        <div class="wireframe">
+            <h2>Flujo de Estados del Pedido</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 0;">
+                <div style="text-align: center; padding: 15px; background: #fff3e0; border: 2px solid #ff9800; border-radius: 8px; flex: 1; margin: 0 5px;">
+                    <div style="font-size: 24px;">🟠</div>
+                    <div><strong>En Cola</strong></div>
+                    <div><small>Esperando preparación</small></div>
+                </div>
+                <div style="font-size: 24px;">→</div>
+                <div style="text-align: center; padding: 15px; background: #e3f2fd; border: 2px solid #2196f3; border-radius: 8px; flex: 1; margin: 0 5px;">
+                    <div style="font-size: 24px;">🔵</div>
+                    <div><strong>En Preparación</strong></div>
+                    <div><small>Preparando pedido</small></div>
+                </div>
+                <div style="font-size: 24px;">→</div>
+                <div style="text-align: center; padding: 15px; background: #e8f5e8; border: 2px solid #4caf50; border-radius: 8px; flex: 1; margin: 0 5px;">
+                    <div style="font-size: 24px;">🟢</div>
+                    <div><strong>Listo</strong></div>
+                    <div><small>Listo para retirar</small></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
