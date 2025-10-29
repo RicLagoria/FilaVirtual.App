@@ -15,8 +15,6 @@ namespace FilaVirtual.App.ViewModels
         private readonly IMenuService _menuService;
         private readonly CartVM _cartVM;
         private readonly ISpeechRecognitionService _speechService;
-        private readonly IVoiceOrderService _voiceOrderService;
-        private readonly IAudioService _audioService;
 
         [ObservableProperty]
         private bool _estaCargando;
@@ -59,15 +57,11 @@ namespace FilaVirtual.App.ViewModels
         public bool MostrarMensajeSinResultados => !string.IsNullOrWhiteSpace(TextoBusqueda) && MenuAgrupado.Count == 0;
 
         public MenuVM(IMenuService menuService, CartVM cartVM, 
-                     ISpeechRecognitionService speechService, 
-                     IVoiceOrderService voiceOrderService,
-                     IAudioService audioService)
+                     ISpeechRecognitionService speechService)
         {
             _menuService = menuService;
             _cartVM = cartVM;
             _speechService = speechService;
-            _voiceOrderService = voiceOrderService;
-            _audioService = audioService;
             
             // Suscribirse a cambios en el texto de búsqueda
             PropertyChanged += (s, e) =>
@@ -217,6 +211,7 @@ namespace FilaVirtual.App.ViewModels
         {
             if (EstaEscuchando)
             {
+                // Detener micrófono
                 await _speechService.StopListeningAsync();
                 EstaEscuchando = false;
                 TextoEscuchado = string.Empty;
@@ -226,31 +221,41 @@ namespace FilaVirtual.App.ViewModels
             }
             else
             {
-                EstadoMic = "Iniciando micrófono...";
+                // Iniciar micrófono
+                EstadoMic = "Iniciando...";
                 ColorEstado = Colors.Orange;
-                TextoEscuchado = "Configurando audio...";
+                TextoEscuchado = "Configurando...";
                 
-                // Reproducir sonido de inicio
-                await _audioService.PlayStartRecordingSoundAsync();
-                
-                await _speechService.StartListeningAsync();
-                
-                if (EstaEscuchando)
+                try
                 {
-                    TextoEscuchado = "🎤 Escuchando... di tu pedido";
-                    EstadoMic = "Escuchando";
-                    ColorEstado = Colors.Green;
-                    System.Diagnostics.Debug.WriteLine("[MenuVM] Micrófono activado correctamente");
+                    // Iniciar reconocimiento
+                    await _speechService.StartListeningAsync();
+                    
+                    // Actualizar estado
+                    EstaEscuchando = _speechService.IsListening;
+                    
+                    if (EstaEscuchando)
+                    {
+                        TextoEscuchado = "🎤 Escuchando... di tu pedido";
+                        EstadoMic = "Escuchando";
+                        ColorEstado = Colors.Green;
+                        System.Diagnostics.Debug.WriteLine("[MenuVM] ✅ Micrófono activado");
+                    }
+                    else
+                    {
+                        TextoEscuchado = "❌ Error al activar micrófono";
+                        EstadoMic = "Error";
+                        ColorEstado = Colors.Red;
+                        System.Diagnostics.Debug.WriteLine("[MenuVM] ❌ Error al activar micrófono");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    TextoEscuchado = "❌ Error al activar micrófono";
+                    EstaEscuchando = false;
+                    TextoEscuchado = $"❌ Error: {ex.Message}";
                     EstadoMic = "Error";
                     ColorEstado = Colors.Red;
-                    System.Diagnostics.Debug.WriteLine("[MenuVM] Error al activar micrófono");
-                    
-                    // Reproducir sonido de error
-                    await _audioService.PlayErrorSoundAsync();
+                    System.Diagnostics.Debug.WriteLine($"[MenuVM] ❌ Excepción: {ex.Message}");
                 }
             }
         }
@@ -265,80 +270,92 @@ namespace FilaVirtual.App.ViewModels
 
             try
             {
-                // Interpretar el pedido
-                var items = await _voiceOrderService.InterpretarPedidoAsync(texto);
-
-                if (items.Count == 0)
+                // Buscar productos mencionados en el texto
+                var productosEncontrados = BuscarProductosEnTexto(texto.ToLower());
+                
+                if (productosEncontrados.Count == 0)
                 {
-                    TextoEscuchado = "❌ No entendí el pedido. Intenta de nuevo.";
+                    TextoEscuchado = "❌ No encontré productos del menú en tu pedido";
                     return;
                 }
 
-                // Agregar items al carrito
+                // Agregar productos al carrito
                 int itemsAgregados = 0;
-                foreach (var voiceItem in items)
+                foreach (var producto in productosEncontrados)
                 {
-                    // Buscar el producto en el menú
-                    MenuItemModel? menuItem = null;
-                    
-                    foreach (var grupo in MenuAgrupado)
-                    {
-                        menuItem = grupo.FirstOrDefault(m =>
-                            m.Nombre.Equals(voiceItem.NombreProducto, StringComparison.OrdinalIgnoreCase) ||
-                            m.Nombre.Contains(voiceItem.NombreProducto, StringComparison.OrdinalIgnoreCase)
-                        );
-                        
-                        if (menuItem != null) break;
-                    }
-
-                    if (menuItem != null)
-                    {
-                        // Agregar la cantidad solicitada
-                        for (int i = 0; i < voiceItem.Cantidad; i++)
-                        {
-                            _cartVM.AgregarItem(menuItem);
-                        }
-                        
-                        itemsAgregados++;
-                        System.Diagnostics.Debug.WriteLine($"[MenuVM] Agregado: {voiceItem.Cantidad}x {menuItem.Nombre}");
-                    }
+                    _cartVM.AgregarItem(producto);
+                    itemsAgregados++;
+                    System.Diagnostics.Debug.WriteLine($"[MenuVM] Agregado: {producto.Nombre}");
                 }
 
                 // Mostrar confirmación
-                if (itemsAgregados > 0)
-                {
-                    TextoEscuchado = $"✅ {itemsAgregados} producto(s) agregados al carrito";
-                    
-                    // Reproducir sonido de confirmación
-                    await _audioService.PlayConfirmationSoundAsync();
-                    
-                    // Opcional: Mostrar alert
-                    await MainThread.InvokeOnMainThreadAsync(async () =>
-                    {
-                        var mensaje = string.Join("\n", items.Select(i => $"• {i.Cantidad}x {i.NombreProducto}"));
-                        await Application.Current!.MainPage!.DisplayAlert(
-                            "✅ Agregado al Carrito",
-                            mensaje,
-                            "OK"
-                        );
-                    });
-                }
-                else
-                {
-                    TextoEscuchado = "❌ No encontré ese producto en el menú";
-                    
-                    // Reproducir sonido de error
-                    await _audioService.PlayErrorSoundAsync();
-                }
+                TextoEscuchado = $"✅ {itemsAgregados} producto(s) agregados al carrito";
+                
+                // Mostrar confirmación visual
+                await MostrarConfirmacionAgregado($"{itemsAgregados} producto(s)");
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[MenuVM] Error al procesar voz: {ex.Message}");
                 TextoEscuchado = "❌ Error al procesar pedido";
-                
-                // Reproducir sonido de error
-                await _audioService.PlayErrorSoundAsync();
             }
+        }
+
+        /// <summary>
+        /// Busca productos del menú mencionados en el texto reconocido
+        /// </summary>
+        private List<MenuItemModel> BuscarProductosEnTexto(string texto)
+        {
+            var productosEncontrados = new List<MenuItemModel>();
+            
+            // Mapeo de palabras clave a productos del menú
+            var mapaProductos = new Dictionary<string, List<string>>
+            {
+                { "Espresso", new List<string> { "espresso", "expreso", "café espresso" } },
+                { "Café con Leche", new List<string> { "café con leche", "cortado", "café cortado", "café" } },
+                { "Capuccino", new List<string> { "capuccino", "capuchino", "cappuccino" } },
+                { "Agua 500 ml", new List<string> { "agua", "agua mineral" } },
+                { "Jugo de frutas", new List<string> { "jugo", "jugo de frutas", "juguito" } },
+                { "Medialuna", new List<string> { "medialuna", "medialunas", "croissant" } },
+                { "Tostada", new List<string> { "tostada", "tostadas", "pan tostado" } },
+                { "JyQ", new List<string> { "jamón y queso", "jamón queso", "sandwich", "sándwich", "jyq" } }
+            };
+
+            // Buscar cada producto en el texto
+            foreach (var grupo in MenuAgrupado)
+            {
+                foreach (var item in grupo)
+                {
+                    // Verificar si el nombre del producto está en el texto
+                    if (texto.Contains(item.Nombre.ToLower()))
+                    {
+                        if (!productosEncontrados.Any(p => p.Nombre == item.Nombre))
+                        {
+                            productosEncontrados.Add(item);
+                        }
+                        continue;
+                    }
+
+                    // Verificar palabras clave alternativas
+                    if (mapaProductos.ContainsKey(item.Nombre))
+                    {
+                        var palabrasClave = mapaProductos[item.Nombre];
+                        foreach (var palabra in palabrasClave)
+                        {
+                            if (texto.Contains(palabra))
+                            {
+                                if (!productosEncontrados.Any(p => p.Nombre == item.Nombre))
+                                {
+                                    productosEncontrados.Add(item);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return productosEncontrados;
         }
 
         /// <summary>
