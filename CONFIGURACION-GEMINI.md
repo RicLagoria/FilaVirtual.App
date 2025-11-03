@@ -10,20 +10,37 @@
 
 ### 2. Configurar Variable de Entorno
 
-#### Opción A: Variable de Sistema (Recomendado)
+#### Opción A: .NET User Secrets (Recomendado para Desarrollo)
+```bash
+# Inicializar User Secrets
+dotnet user-secrets init
+
+# Configurar la API key
+dotnet user-secrets set "GeminiApiKey" "TU_CLAVE_AQUI"
+
+# Verificar
+dotnet user-secrets list
+```
+
+#### Opción B: Variable de Sistema (Producción)
 ```bash
 # En PowerShell (Windows)
-$env:GEMINI_API_KEY="AIzaSyDwDPIC-v27c8urAgEhFuTe_MODVE2NSzA"
+$env:GEMINI_API_KEY="TU_CLAVE_AQUI"
+
+# Para hacer permanente (requiere reiniciar terminal)
+[Environment]::SetEnvironmentVariable("GEMINI_API_KEY", "TU_CLAVE_AQUI", "User")
 
 # En CMD
-set GEMINI_API_KEY=tu_clave_aqui
+set GEMINI_API_KEY=TU_CLAVE_AQUI
 ```
 
-#### Opción B: En el Código (Solo para Testing)
+#### Opción C: En el Código (⚠️ NO RECOMENDADO - Solo para testing local)
 ```csharp
-// En MauiProgram.cs (temporal)
-Environment.SetEnvironmentVariable("GEMINI_API_KEY", "AIzaSyDwDPIC-v27c8urAgEhFuTe_MODVE2NSzA");
+// En MauiProgram.cs (temporal y NUNCA hacer commit)
+Environment.SetEnvironmentVariable("GEMINI_API_KEY", "TU_CLAVE_AQUI");
 ```
+
+**⚠️ IMPORTANTE:** NUNCA hagas commit de claves API en el código o documentación.
 
 ### 3. Verificar Configuración
 La app detectará automáticamente si tienes la API key configurada:

@@ -29,7 +29,8 @@
 		<!-- Permitir ejecución sin empaquetado (Windows unpackaged mode) -->
 		<WindowsPackageType>None</WindowsPackageType>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-	</PropertyGroup>
+	  <UserSecretsId>675a4e02-1ed6-4013-8a83-a79b0c7b8d49</UserSecretsId>
+  </PropertyGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->

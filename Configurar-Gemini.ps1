@@ -33,16 +33,35 @@ if (-not $apiKey -or -not $apiKey.StartsWith("AIza")) {
     exit 1
 }
 
-# Configurar variable de entorno para la sesión actual
+# Opción 1: User Secrets (Recomendado para desarrollo)
+Write-Host "`n🔐 Configurando User Secrets..." -ForegroundColor Cyan
+try {
+    # Inicializar User Secrets si no está configurado
+    $projectFile = "FilaVirtual.App.csproj"
+    if (Test-Path $projectFile) {
+        dotnet user-secrets init --project $projectFile 2>$null
+        dotnet user-secrets set "GeminiApiKey" $apiKey --project $projectFile
+        Write-Host "✅ API Key guardada en User Secrets (seguro)" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  No se encontró el archivo de proyecto" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "⚠️  Error configurando User Secrets: $($_.Exception.Message)" -ForegroundColor Yellow
+}
+
+# Opción 2: Variable de entorno para la sesión actual
 $env:GEMINI_API_KEY = $apiKey
 Write-Host "✅ Variable configurada para esta sesión" -ForegroundColor Green
 
-# Configurar variable de entorno permanente
-try {
-    [Environment]::SetEnvironmentVariable("GEMINI_API_KEY", $apiKey, "User")
-    Write-Host "✅ Variable configurada permanentemente" -ForegroundColor Green
-} catch {
-    Write-Host "⚠️  No se pudo configurar permanentemente. Usa: setx GEMINI_API_KEY `"$apiKey`"" -ForegroundColor Yellow
+# Opción 3: Variable de entorno permanente (opcional)
+$permanente = Read-Host "`n¿Configurar variable de entorno permanente? (s/n)"
+if ($permanente -eq "s") {
+    try {
+        [Environment]::SetEnvironmentVariable("GEMINI_API_KEY", $apiKey, "User")
+        Write-Host "✅ Variable configurada permanentemente (reinicia el terminal)" -ForegroundColor Green
+    } catch {
+        Write-Host "⚠️  No se pudo configurar permanentemente. Usa: setx GEMINI_API_KEY `"$apiKey`"" -ForegroundColor Yellow
+    }
 }
 
 # Mostrar información de costos

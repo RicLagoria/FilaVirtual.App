@@ -187,11 +187,33 @@ dotnet build
 
 ---
 
+## 🔐 Seguridad
+
+⚠️ **IMPORTANTE:** Esta aplicación usa la API de Google Gemini Pro para reconocimiento de voz avanzado. La clave API debe ser protegida.
+
+### Configuración Segura
+
+```bash
+# Opción 1: User Secrets (recomendado para desarrollo)
+dotnet user-secrets set "GeminiApiKey" "TU_CLAVE_AQUI"
+
+# Opción 2: Variable de entorno
+$env:GEMINI_API_KEY="TU_CLAVE_AQUI"
+```
+
+**⚠️ NUNCA hagas commit de claves API en el código.**
+
+Ver `SEGURIDAD.md` para más detalles sobre gestión de secretos.
+
+---
+
 ## 📚 Documentación Adicional
 
+- `SEGURIDAD.md` - **⭐ Guía de gestión segura de claves API**
 - `SPRINT-5-PEDIDOS-VOZ.md` - Documentación del Sprint de Pedidos por Voz
 - `DISTRIBUCION.md` - Guía de distribución y empaquetado
 - `VS2022-SETUP.md` - Configuración para Visual Studio 2022
+- `CONFIGURACION-GEMINI.md` - Configuración de Gemini Pro para pedidos por voz
 
 ---
 

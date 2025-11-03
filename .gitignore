@@ -370,3 +370,10 @@ FodyWeavers.xsd
 *.db
 *.db-shm
 *.db-wal
+
+# Secrets and sensitive configuration
+appsettings.*.json
+secrets.json
+*.key
+.env
+.env.local
